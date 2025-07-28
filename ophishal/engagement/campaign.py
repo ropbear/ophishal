@@ -1,0 +1,3 @@
+
+class Campaign:
+    pass

@@ -1,0 +1,26 @@
+{
+  "campaign_identifier": "sptg-q3-finance-credential-harvest",
+  "vector": "email",
+  "source": {
+    "type": "employee",
+    "employee_id": "emp_randy"
+  },
+  "targets": [
+    {
+      "type": "employee",
+      "employee_id": "emp_stan"
+    },
+    {
+      "type": "employee",
+      "employee_id": "emp_cartman"
+    }
+  ],
+  "persuasion_mechanisms": ["urgency","authority"],
+  "language_style": "corporate, direct, urgent",
+  "topic": "quarterly financial report access issue",
+  "phish_type": "credential phishing",
+  "email_subject": "Action Required: Q3 Financials Access Expiration",
+  "email_body": "Hi team,\n\nWe’ve identified an issue with your current permissions to view the Q3 financial documents in our internal system. As of today, your access will expire in 24 hours unless revalidated.\n\nPlease use the secure access portal below to re-authenticate:\n\nhttps://sptg-financials-login.com\n\nThis is time-sensitive and requires completion before COB today.\n\nThanks,\nRandy",
+  "selected_template": "standard-access-urgency.html",
+  "signature_block": "Randy Marsh | Director of Engineering | South Park Technology Group\nEmail: rmarsh@sptg.com | Phone: (303) 555-1001"
+}
