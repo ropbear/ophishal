@@ -133,9 +133,10 @@
     }
   },
   "culture": {
-    "location": "South Park, CO",
-    "majority_ethnicity": "White",
-    "workplace_culture": "Casual"
+    "city":"South Park",
+    "province":"Colorado",
+    "country_code":"US",
+    "workplace": "Casual"
   },
   "information_technologies": [
     "Google Workspace",

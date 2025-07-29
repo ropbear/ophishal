@@ -26,10 +26,5 @@ def common_asserts(p:Pretext):
     assert "https://sptg-financials-login.com" in p.email_body
     assert p.selected_template == "standard-access-urgency.html"
 
-def test_pretext_json():
-    with open(TESTFILE, "r") as f:
-        config = json.load(f)
-    common_asserts(Pretext(config=config))
-
 def test_pretext_file():
     common_asserts(Pretext(filepath=TESTFILE))

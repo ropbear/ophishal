@@ -1,8 +1,9 @@
 # ophishal/context/context.py
 import json
-from typing import Dict, List, Optional
 from pathlib import Path
-from ophishal.context.profile import CompanyProfile, EmployeeProfile, DepartmentProfile
+from dataclasses import dataclass
+from ophishal.context.profile import CompanyProfile, EmployeeProfile, DepartmentProfile, CultureProfile
+from ophishal.common.logging import create_logger
 
 class Context:
     def __init__(self, config:dict=None, filepath:Path=None):
@@ -21,7 +22,7 @@ class Context:
             uid: DepartmentProfile(**dept) for uid, dept in config["departments"].items()
         }
 
-        self.culture                    = config["culture"]
+        self.culture                    = CultureProfile(*config["culture"].values())
         self.information_technologies   = config["information_technologies"]
         self.current_events             = config["current_events"]
         self.current_access             = config["current_access"]
