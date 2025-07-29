@@ -4,6 +4,7 @@ from typing import List, Optional
 
 @dataclass
 class CompanyProfile:
+    uid: str
     official_name: str
     common_names: List[str]
     abbreviations: List[str]
@@ -15,7 +16,7 @@ class CompanyProfile:
 
 @dataclass
 class EmployeeProfile:
-    employee_id: str
+    uid: str
     first_name: str
     last_name: str
     nickname: Optional[str]
@@ -33,5 +34,7 @@ class EmployeeProfile:
 
 @dataclass
 class DepartmentProfile:
+    uid: str
     name: str
-    head_id: Optional[str]  # employee_id of department head
+    company_uid: str
+    head_uid: Optional[str]  # employee_id of department head

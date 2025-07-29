@@ -1,5 +1,6 @@
 {
   "company": {
+    "uid":"sptg",
     "official_name": "South Park Technology Group",
     "common_names": ["South Park Tech", "SPTG"],
     "abbreviations": ["SPTG"],
@@ -11,7 +12,7 @@
   "target_employees": ["emp_stan", "emp_cartman"],
   "employees": {
     "emp_stan": {
-      "employee_id": "emp_stan",
+      "uid": "emp_stan",
       "first_name": "Stan",
       "last_name": "Marsh",
       "nickname": "Stan",
@@ -27,7 +28,7 @@
       "reports_to": "emp_randy"
     },
     "emp_cartman": {
-      "employee_id": "emp_cartman",
+      "uid": "emp_cartman",
       "first_name": "Eric",
       "last_name": "Cartman",
       "nickname": "Cartman",
@@ -43,7 +44,7 @@
       "reports_to": "emp_sheila"
     },
     "emp_kyle": {
-      "employee_id": "emp_kyle",
+      "uid": "emp_kyle",
       "first_name": "Kyle",
       "last_name": "Broflovski",
       "nickname": "Ky",
@@ -59,7 +60,7 @@
       "reports_to": "emp_gerald"
     },
     "emp_kenny": {
-      "employee_id": "emp_kenny",
+      "uid": "emp_kenny",
       "first_name": "Kenny",
       "last_name": "McCormick",
       "nickname": "Ken",
@@ -75,7 +76,7 @@
       "reports_to": "emp_randy"
     },
     "emp_randy": {
-      "employee_id": "emp_randy",
+      "uid": "emp_randy",
       "first_name": "Randy",
       "last_name": "Marsh",
       "nickname": "Randy",
@@ -91,7 +92,7 @@
       "reports_to": null
     },
     "emp_sheila": {
-      "employee_id": "emp_sheila",
+      "uid": "emp_sheila",
       "first_name": "Sheila",
       "last_name": "Broflovski",
       "nickname": "Sheila",
@@ -107,7 +108,7 @@
       "reports_to": null
     },
     "emp_gerald": {
-      "employee_id": "emp_gerald",
+      "uid": "emp_gerald",
       "first_name": "Gerald",
       "last_name": "Broflovski",
       "nickname": "Gerald",
@@ -121,6 +122,14 @@
       "personal_phone": "(303) 555-2003",
       "location": "South Park, CO",
       "reports_to": null
+    }
+  },
+  "departments":{
+    "eng":{
+      "uid":"eng",
+      "name": "Engineering",
+      "head_uid": "emp_stan",
+      "company_uid":"sptg"
     }
   },
   "culture": {
@@ -144,5 +153,5 @@
     "Recent outage in South Park data center",
     "Hiring freeze announced in non-engineering departments"
   ],
-  "current_access": ["emp_kyle", "emp_kenny"]
+  "current_access": ["emp_stan"]
 }
