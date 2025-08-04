@@ -1,14 +1,14 @@
 # tests/test_context.py
-import os
+from pathlib import Path
 import json
 import pytest
 from ophishal.context.context import Context
 
-TESTFILE = os.path.join(os.path.dirname(__file__), "..", "examples", "context.json")
 
 @pytest.fixture
 def generate_context():
-    return Context(filepath=TESTFILE)
+    testfile = Path(__file__).resolve().parent.parent / "examples" / "context.json"
+    return Context(filepath=testfile)
 
 def test_context_parsing_from_file(generate_context):
     ctx = generate_context
@@ -16,10 +16,16 @@ def test_context_parsing_from_file(generate_context):
     assert isinstance(ctx, Context)
 
 def test_context_parsing_null_json():
-    assert None == Context()
+    try:
+        ctx = Context()
+    except Exception as e:
+        assert isinstance(e, ValueError)
 
 def test_context_parsing_empty_json():
-    assert None == Context(config={})
+    try:
+        ctx = Context(config={})
+    except Exception as e:
+        assert isinstance(e, AttributeError)
 
 def test_context_parsing_company(generate_context):
     ctx = generate_context

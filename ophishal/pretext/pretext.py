@@ -1,13 +1,26 @@
-import json
+# pretext/pretext.py
 from pathlib import Path
 from dataclasses import dataclass
+from ophishal.context.context import Context
+from ophishal.common.config import BaseConfig
 
-class Pretext:
-    def __init__(self, config:dict=None, filepath:Path=None):
-        if filepath is not None and config is not None:
-            raise ValueError("Can't have both config and filepath")
-        elif filepath is not None:
-            config = self.__from_file(filepath)
+class Pretext(BaseConfig):
+    require = {
+        "campaign_identifier":str,
+        "vector":str,
+        "source":dict,
+        "targets":list,
+        "persuasion_mechanisms":list,
+        "language":str,
+        "language_style":list,
+        "topic":str,
+        "phish_type":str,
+        "email_subject":str,
+        "email_body":str,
+        "selected_template":str,
+        "attachment":str
+    }
+    def parse(self, config:dict):
 
         self.source = PretextSource(**config["source"])
         self.targets = [Target(**t) for t in config["targets"]]
@@ -21,10 +34,6 @@ class Pretext:
         self.email_subject          = config["email_subject"]
         self.email_body             = config["email_body"]
         self.selected_template      = config["selected_template"]
-
-    def __from_file(self, filepath:Path) -> dict:
-        with open(filepath, "r", encoding="utf-8") as f:
-            return json.load(f)
 
 
 @dataclass

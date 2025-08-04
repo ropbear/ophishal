@@ -9,7 +9,6 @@
     "type": "Private",
     "industry": "Media"
   },
-  "target_employees": ["emp_stan", "emp_cartman"],
   "employees": {
     "emp_stan": {
       "uid": "emp_stan",
@@ -154,5 +153,6 @@
     "Recent outage in South Park data center",
     "Hiring freeze announced in non-engineering departments"
   ],
-  "current_access": ["emp_stan"]
+  "current_access": ["emp_stan"],
+  "target_employees": ["emp_stan", "emp_cartman"]
 }

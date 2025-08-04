@@ -1,16 +1,26 @@
 # ophishal/context/context.py
+
 import json
 from pathlib import Path
-from dataclasses import dataclass
+
 from ophishal.context.profile import CompanyProfile, EmployeeProfile, DepartmentProfile, CultureProfile
 from ophishal.common.logging import create_logger
+from ophishal.common.config import BaseConfig
 
-class Context:
-    def __init__(self, config:dict=None, filepath:Path=None):
-        if filepath is not None and config is not None:
-            raise ValueError("Can't have both config and filepath")
-        elif filepath is not None:
-            config = self.__from_file(filepath)
+
+class Context(BaseConfig):
+    require = {
+        "company":dict,
+        "employees":dict,
+        "departments":dict,
+        "culture":dict,
+        "information_technologies":list,
+        "current_events":list,
+        "current_access":list,
+        "target_employees":list
+    }
+
+    def parse(self, config:dict):
 
         self.company = CompanyProfile(**config["company"])
 
@@ -26,7 +36,4 @@ class Context:
         self.information_technologies   = config["information_technologies"]
         self.current_events             = config["current_events"]
         self.current_access             = config["current_access"]
-
-    def __from_file(self, filepath:Path) -> dict:
-        with open(filepath, "r", encoding="utf-8") as f:
-            return json.load(f)
+        self.target_employees           = config["target_employees"]
