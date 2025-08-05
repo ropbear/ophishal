@@ -19,8 +19,35 @@ poetry env activate
 
 ## Design
 
-There are three primary components.
+```mermaid
+flowchart TD
+    GenAICtx["Generative AI Context Instructions"]
+    GenAIPtx["Generative AI Pretext Instructions"]
+    GenAIEng["Generative AI Engagement Instructions"]
+    CreateCtxPrompt["createCtxPrompt()"]
+    ContextSchema["Context JSON Schema"]
+    ContextConfig["context.json"]
+    ContextObject["Context"]
+    CreatePtxPrompt["createPtxPrompt()"]
+    PretextSchema["Pretext JSON Schema"]
+    PretextConfig["pretext.json"]
+    PretextObject["Pretext"]
+    EngagementSchema["Engagement JSON Schema"]
+    CreateEngPrompt["createEngPrompt()"]
+    EngagementConfig["engagement.json"]
+    User["User"]
+    EngagementObject["Engagement"]
 
-1. Context
-2. Pretext
-3. Engagement
+    User --> ContextConfig
+    ContextSchema --> CreateCtxPrompt --> GenAICtx -- returns --> ContextConfig
+    ContextConfig -- parse() --> ContextObject
+    ContextObject --> CreatePtxPrompt --> GenAIPtx
+    PretextSchema --> CreatePtxPrompt
+    GenAIPtx -- returns --> PretextConfig
+    PretextConfig -- parse() --> PretextObject
+    PretextObject --> CreateEngPrompt --> GenAIEng
+    EngagementSchema --> CreateEngPrompt
+    GenAIEng -- returns --> EngagementConfig
+    User --> EngagementConfig
+    EngagementConfig -- parse() --> EngagementObject
+```
