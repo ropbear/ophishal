@@ -44,6 +44,7 @@ flowchart TD
     ContextObject --> CreatePtxPrompt --> GenAIPtx
     PretextSchema --> CreatePtxPrompt
     GenAIPtx -- returns --> PretextConfig
+    User --> PretextConfig
     PretextConfig -- parse() --> PretextObject
     PretextObject --> CreateEngPrompt --> GenAIEng
     EngagementSchema --> CreateEngPrompt
