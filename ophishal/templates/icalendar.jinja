@@ -1,0 +1,29 @@
+BEGIN:VCALENDAR
+PRODID:Microsoft Exchange Server 2022
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VTIMEZONE
+TZID:UTC
+BEGIN:STANDARD
+DTSTART:{{ dtg_start }}
+TZOFFSETFROM:+0000
+TZOFFSETTO:+0000
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;TZID=UTC:{{ dtg_start }}
+DTEND;TZID=UTC:{{ dtg_end }}
+DTSTAMP:{{ dtg_created }}
+ORGANIZER;CN={{ organizer_name }}:mailto:{{ organizer_email }}
+UID:{{ event_uid }}
+CREATED:{{ dtg_created }}
+DESCRIPTION:{{ description }}
+LAST-MODIFIED:{{ dtg_created }}
+LOCATION:Microsoft Teams Meeting
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:{{ summary }}
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

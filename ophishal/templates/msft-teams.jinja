@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Microsoft Teams Meeting</title>
+</head>
+<body style="background:white; font-family:'Segoe UI', sans-serif; color:#252424; font-size:14px; line-height:1.5;">
+
+  <!-- Event Title -->
+  <p style="margin-bottom:12px; font-size:14px; color:black;">
+    {{ body }}
+  </p>
+
+  <!-- Divider -->
+  <p style="margin:12px 0; color:#5F5F5F;">
+    ________________________________________________________________________________
+  </p>
+
+  <!-- Header -->
+  <p style="margin:0; font-size:18pt; font-weight:normal;">
+    Microsoft Teams meeting
+  </p>
+
+  <!-- Join Label -->
+  <p style="margin:8px 0 0 0; font-size:10.5pt; font-weight:bold;">
+    Join on your computer or mobile app
+  </p>
+
+  <!-- Main Join Link -->
+  <p style="margin:4px 0;">
+    <a href="{{ callback }}" target="_blank" style="font-size:10.5pt; font-weight:600; color:#6264A7;">
+      Click here to join the meeting
+    </a>
+  </p>
+
+  <!-- Options Links -->
+  <p style="margin:4px 0;">
+    <a href="https://aka.ms/JoinTeamsMeeting" target="_blank" style="font-size:10.5pt; color:#6264A7; text-decoration:none;">
+      Learn More
+    </a> |
+    <a href="{{ callback }}" target="_blank" style="font-size:10.5pt; color:#6264A7; text-decoration:none;">
+      Meeting options
+    </a>
+  </p>
+
+  <!-- Bottom Divider -->
+  <p style="margin:12px 0; color:#5F5F5F; opacity:0.36;">
+    ________________________________________________________________________________
+  </p>
+
+</body>
+</html>

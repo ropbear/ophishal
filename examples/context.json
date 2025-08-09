@@ -1,6 +1,8 @@
 {
+  "campaign": "sptg-q3-finance-credential-harvest",
+
   "company": {
-    "uid":"sptg",
+    "uid": "sptg",
     "official_name": "South Park Technology Group",
     "common_names": ["South Park Tech", "SPTG"],
     "abbreviations": ["SPTG"],
@@ -9,135 +11,61 @@
     "type": "Private",
     "industry": "Media"
   },
-  "employees": {
-    "emp_stan": {
-      "uid": "emp_stan",
-      "first_name": "Stan",
-      "last_name": "Marsh",
-      "nickname": "Stan",
-      "username": "smarsh",
-      "department": "Engineering",
-      "work_title": "Software Engineer I",
-      "signature_block": "Stan Marsh | Software Engineer I",
-      "work_email": "smarsh@sptg.com",
-      "work_phone": null,
-      "personal_email": "stan@example.com",
-      "personal_phone": "(303) 555-2020",
-      "location": "South Park, CO",
-      "reports_to": "emp_randy"
-    },
-    "emp_cartman": {
-      "uid": "emp_cartman",
-      "first_name": "Eric",
-      "last_name": "Cartman",
-      "nickname": "Cartman",
-      "username": "ecartman",
-      "department": "Customer Operations",
-      "work_title": "Support Technician",
-      "signature_block": "Eric Cartman | Support Technician | South Park Technology Group\nEmail: ecartman@sptg.com | Phone: (303) 555-1033",
-      "work_email": "ecartman@sptg.com",
-      "work_phone": null,
-      "personal_email": null,
-      "personal_phone": "(303) 555-2033",
-      "location": "South Park, CO",
-      "reports_to": "emp_sheila"
-    },
-    "emp_kyle": {
-      "uid": "emp_kyle",
-      "first_name": "Kyle",
-      "last_name": "Broflovski",
-      "nickname": "Ky",
-      "username": "kbroflovski",
-      "department": "IT Security",
-      "work_title": "Security Analyst",
-      "signature_block": "Kyle Broflovski | Security Analyst | South Park Technology Group\nEmail: kbroflovski@sptg.com | Phone: (303) 555-1044",
-      "work_email": "kbroflovski@sptg.com",
-      "work_phone": "(303) 555-1044",
-      "personal_email": "kyle.broflovski@example.com",
-      "personal_phone": null,
-      "location": "South Park, CO",
-      "reports_to": "emp_gerald"
-    },
-    "emp_kenny": {
-      "uid": "emp_kenny",
-      "first_name": "Kenny",
-      "last_name": "McCormick",
-      "nickname": "Ken",
-      "username": "kmccormick",
-      "department": "Field Services",
-      "work_title": "Junior Technician",
-      "signature_block": "Kenny McCormick | Junior Technician | South Park Technology Group\nEmail: kmccormick@sptg.com | Phone: (303) 555-1055",
-      "work_email": null,
-      "work_phone": "(303) 555-1055",
-      "personal_email": null,
-      "personal_phone": "(303) 555-2055",
-      "location": "South Park, CO",
-      "reports_to": "emp_randy"
-    },
-    "emp_randy": {
+
+  "departments": [
+    {
+      "uid": "eng",
+      "name": "Engineering",
+      "company_uid": "sptg",
+      "head_uid": "emp_randy"
+    }
+  ],
+
+  "employees": [
+    {
       "uid": "emp_randy",
       "first_name": "Randy",
       "last_name": "Marsh",
       "nickname": "Randy",
       "username": "rmarsh",
-      "department": "Engineering",
+      "department_uid": "eng",
       "work_title": "Director of Engineering",
-      "signature_block": "Randy Marsh | Director of Engineering | South Park Technology Group\nEmail: rmarsh@sptg.com | Phone: (303) 555-1001",
-      "work_email": "rmarsh@sptg.com",
+      "signature_block": "Randy Marsh | Director of Engineering",
+      "work_email": "randy@localhost",
       "work_phone": "(303) 555-1001",
       "personal_email": "randy.marsh@example.com",
       "personal_phone": "(303) 555-2001",
       "location": "South Park, CO",
-      "reports_to": null
+      "reports_to": null,
+      "sample_text": "Team—let’s keep it tight. Need a quick sync on the VR launch blockers today."
     },
-    "emp_sheila": {
-      "uid": "emp_sheila",
-      "first_name": "Sheila",
-      "last_name": "Broflovski",
-      "nickname": "Sheila",
-      "username": "sbroflovski",
-      "department": "Customer Operations",
-      "work_title": "Manager, Support Services",
-      "signature_block": "Sheila Broflovski | Manager, Support Services | South Park Technology Group\nEmail: sbroflovski@sptg.com | Phone: (303) 555-1002",
-      "work_email": "sbroflovski@sptg.com",
-      "work_phone": "(303) 555-1002",
-      "personal_email": "sheila.broflovski@example.com",
-      "personal_phone": "(303) 555-2002",
+    {
+      "uid": "emp_stan",
+      "first_name": "Stan",
+      "last_name": "Marsh",
+      "nickname": "Stan",
+      "username": "smarsh",
+      "department_uid": "eng",
+      "work_title": "Software Engineer I",
+      "signature_block": "Stan Marsh | Software Engineer I",
+      "work_email": "stan@localhost",
+      "work_phone": null,
+      "personal_email": "stan@example.com",
+      "personal_phone": "(303) 555-2020",
       "location": "South Park, CO",
-      "reports_to": null
-    },
-    "emp_gerald": {
-      "uid": "emp_gerald",
-      "first_name": "Gerald",
-      "last_name": "Broflovski",
-      "nickname": "Gerald",
-      "username": "gbroflovski",
-      "department": "IT Security",
-      "work_title": "Chief Information Security Officer",
-      "signature_block": "Gerald Broflovski | CISO | South Park Technology Group\nEmail: gbroflovski@sptg.com | Phone: (303) 555-1003",
-      "work_email": "gbroflovski@sptg.com",
-      "work_phone": "(303) 555-1003",
-      "personal_email": "gerald.broflovski@example.com",
-      "personal_phone": "(303) 555-2003",
-      "location": "South Park, CO",
-      "reports_to": null
+      "reports_to": "emp_randy",
+      "sample_text": "I can take a look after stand-up. If it’s urgent, ping me on Slack."
     }
-  },
-  "departments":{
-    "eng":{
-      "uid":"eng",
-      "name": "Engineering",
-      "head_uid": "emp_stan",
-      "company_uid":"sptg"
-    }
-  },
+  ],
+  "sender": "emp_randy",
+  "targets": ["emp_stan"],
   "culture": {
     "city":"South Park",
     "province":"Colorado",
     "country_code":"US",
     "workplace": "Casual"
   },
-  "information_technologies": [
+  "tech": [
     "Google Workspace",
     "Slack",
     "Zoom",
@@ -152,7 +80,5 @@
     "Internal phishing test scheduled next week",
     "Recent outage in South Park data center",
     "Hiring freeze announced in non-engineering departments"
-  ],
-  "current_access": ["emp_stan"],
-  "target_employees": ["emp_stan", "emp_cartman"]
+  ]
 }

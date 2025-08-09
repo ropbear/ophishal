@@ -1,50 +1,26 @@
-# pretext/pretext.py
+# ophishal/pretext/pretext.py
 from pathlib import Path
-from dataclasses import dataclass
-from ophishal.context.context import Context
 from ophishal.common.config import BaseConfig
 
 class Pretext(BaseConfig):
     require = {
-        "campaign_identifier":str,
-        "vector":str,
-        "source":dict,
-        "targets":list,
-        "persuasion_mechanisms":list,
-        "language":str,
-        "language_style":list,
-        "topic":str,
-        "phish_type":str,
-        "email_subject":str,
-        "email_body":str,
-        "template":str,
-        "attachment":str
+        "campaign": str,
+        "company": dict,
+        "departments": list,
+        "employees": list,
+        "sender": str,
+        "targets": list,
+        "culture": dict,
+        "tech": list,
+        "current_events": list,
+        "medium": str,
+        "pretext": str,
+        "desired_action": str,
+        "constraints": list
     }
-    def parse(self, config:dict):
 
-        self.source = PhishSource(**config["source"])
-        self.targets = [PhishTarget(**t) for t in config["targets"]]
-
-        self.campaign_identifier    = config["campaign_identifier"]
-        self.vector                 = config["vector"]
-        self.persuasion_mechanisms  = config["persuasion_mechanisms"]
-        self.language               = config["language"]
-        self.language_style         = config["language_style"]
-        self.topic                  = config["topic"]
-        self.phish_type             = config["phish_type"]
-        self.email_subject          = config["email_subject"]
-        self.email_body             = config["email_body"]
-        self.template               = Path(config["template"])
-        self.attachment             = Path(config["attachment"])
-
-
-@dataclass
-class PhishSource:
-    type: str
-    uid: str
-
-
-@dataclass
-class PhishTarget:
-    type: str
-    uid: str
+    def parse(self, config: dict):
+        self.medium = config["medium"]
+        self.pretext = config["pretext"]
+        self.desired_action = config["desired_action"]
+        self.constraints = config["constraints"]

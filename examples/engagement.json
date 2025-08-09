@@ -57,8 +57,10 @@
       "sample_text": "I can take a look after stand-up. If it’s urgent, ping me on Slack."
     }
   ],
+
   "sender": "emp_randy",
   "targets": ["emp_stan"],
+
   "culture": {
     "city":"South Park",
     "province":"Colorado",
@@ -81,8 +83,20 @@
     "Recent outage in South Park data center",
     "Hiring freeze announced in non-engineering departments"
   ],
-  "medium":"email",
-  "pretext":"Randy wants to have a meeting in the next hour about the upcoming SP MetaVerse launch and wants people to read a docx read-ahead with macro-enabled graphics.",
-  "desired_action": "download docx and enable macros",
-  "constraints": ["no spoofing legal department"]
+
+  "pretext":"",
+
+  "subject": "Action Required: Q3 Financials Access Expiration",
+  "body": "Hi team,\n\nWe’ve identified an issue with your current permissions to view the Q3 financial documents in our internal system. As of today, your access will expire in 24 hours unless revalidated.\n\nPlease use the secure access portal below to re-authenticate:\n\nhttps://sptg-financials-login.com\n\nThis is time-sensitive and requires completion before COB today.\n\nThanks,\nRandy",
+  "template": "msft-teams.jinja",
+  "callback": "http://localhost/payload.docx",
+  "attachment": {
+    "type": "ical",
+    "template": "icalendar.jinja",
+    "event_uid": "ABCDEF",
+    "dtg_created": "20250805T073059Z",
+    "dtg_start": "20250806T073059Z",
+    "dtg_end": "20250806T083059Z",
+    "description": "A meeting for HR sync"
+  }
 }
