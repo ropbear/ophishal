@@ -3,7 +3,7 @@ import pytest
 import json
 from pathlib import Path
 from ophishal.engagement.engagement import Engagement
-from ophishal.common.models import Employee, Department, Company
+from ophishal.models import Employee, Department, Company
 
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "ophishal" / "templates"

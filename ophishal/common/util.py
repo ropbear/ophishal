@@ -1,5 +1,5 @@
 # ophishal/common/util.py
-from ophishal.common.models import Target
+from ophishal.models import Target
 
 
 def resolve_target(uid: str, obj:object) -> Target:

@@ -2,7 +2,8 @@
 from pathlib import Path
 from ophishal.common.util import resolve_target
 from ophishal.common.config import BaseConfig
-from ophishal.common.models import Attachment
+from ophishal.models import Attachment
+from typing import Optional
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 
@@ -14,16 +15,10 @@ class Engagement(BaseConfig):
         "employees": list,
         "sender": str,
         "targets": list,
-        "subject": str,
-        "body": str,
-        "template": str,
-        "callback": str,
-        "attachment": dict
+        "subject": str
     }
 
     def parse(self, config: dict):
         self.subject = config["subject"]
-        self.body = config["body"]
-        self.template = TEMPLATE_DIR / config["template"]
-        self.callback = config["callback"]
-        self.attachment = Attachment(**config["attachment"])
+        if "template" in config:
+            self.template = TEMPLATE_DIR / config["template"]

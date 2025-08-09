@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from ophishal.common.util import resolve_target
-from ophishal.common.models import Company, Department, Employee, Culture, Target
+from ophishal.models import Company, Department, Employee, Culture, Target
 
 class BaseConfig:
     require = {}
