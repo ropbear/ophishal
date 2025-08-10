@@ -6,7 +6,7 @@ This project was completed during study for the Offensive Security Experienced P
 
 A phishing framework which takes a configuration file as input and, leveraging generative AI, builds a pretext, fills in a template, and sends an email to a target.
 
-Alternatively, you can specify your own pretext configuration and use ophishal as a standard phishing framework instead of relying on GenAI.
+Alternatively, you can specify your own complete configuration and use ophishal as a standard command-line phishing framework instead of relying on GenAI.
 
 ## Installation
 

@@ -1,6 +1,6 @@
 # ophishal/pretext/pretext.py
 from pathlib import Path
-from ophishal.common.config import BaseConfig
+from ophishal.config import BaseConfig
 
 class Pretext(BaseConfig):
     require = {
@@ -19,7 +19,7 @@ class Pretext(BaseConfig):
         "constraints": list
     }
 
-    def parse(self, config: dict):
+    def _parse(self, config: dict):
         self.medium = config["medium"]
         self.pretext = config["pretext"]
         self.desired_action = config["desired_action"]

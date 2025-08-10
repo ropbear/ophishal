@@ -2,57 +2,14 @@
 import sys
 import argparse
 from pathlib import Path
+from logging import DEBUG, INFO
 from importlib.metadata import version, PackageNotFoundError
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateNotFound
-from ophishal.engagement.engagement import Engagement
+from ophishal.engagement import Engagement
+from ophishal.logging import create_logger
 
 
 PKG_NAME = "ophishal"
-TEMPLATE_DIR = Path(__file__).resolve().parent / "templates"
 
-
-def resolve_template_path(name_or_path: str) -> Path:
-    p = Path(name_or_path)
-    if p.exists():
-        return p
-    candidate = TEMPLATE_DIR / name_or_path
-    if candidate.exists():
-        return candidate
-    raise FileNotFoundError(f"Template not found: {name_or_path}")
-
-def get_jinja_env(search_path: Path) -> Environment:
-    return Environment(
-        loader=FileSystemLoader(str(search_path)),
-        undefined=StrictUndefined,
-        autoescape=False,
-        trim_blocks=True,
-        lstrip_blocks=True,
-    )
-
-def generate_html_from_template(eng: Engagement, args: object) -> str:
-    template_path = Path(args.template) if args.template is not None else eng.template
-    env = get_jinja_env(template_path.parent)
-    try:
-        tmpl = env.get_template(template_path.name)
-    except TemplateNotFound as e:
-        raise FileNotFoundError(f"Template not found: {template_path}") from e
-
-    return tmpl.render(
-        sender=eng.sender,
-        target=eng.targets[0].first_name if len(eng.targets) == 1 else "all",
-        subject=eng.subject,
-        url=args.malicious_url
-    )
-
-def generate_attachment_from_template(eng: Engagement, args: object) -> str:
-    template_path = resolve_template_path(args.attach_template)
-    env = get_jinja_env(template_path.parent)
-    try:
-        tmpl = env.get_template(template_path.name)
-    except TemplateNotFound as e:
-        raise FileNotFoundError(f"Attachment template not found: {template_path}") from e
-
-    return tmpl.render(**args.attach_params)
 
 def output_data(content: str, path: Path | None):
     if not path:
@@ -62,30 +19,19 @@ def output_data(content: str, path: Path | None):
         f.write(content)
 
 def cmd_render(args) -> int:
+    logger = create_logger("main:render")
     eng = Engagement(filepath=Path(args.config))
 
-    html = generate_html_from_template(eng, args)
-
-    #TODO: properly pass through attachment
-    if args.attach_template:
-        attachment = generate_attachment_from_template(eng, args)
-        if args.out_attach:
-            print(attachment)
-        else:
-            print("Attachment generated (use --out-attach to write to a file).")
-
-    if args.attach:
-        if args.out_attach:
-            src = Path(args.attach)
-            if not src.exists():
-                raise FileNotFoundError(f"Attachment not found: {src}")
-            print(src.read_text(encoding="utf-8"))
-        else:
-            print("Attachment provided (use --out-attach to write to a file).")
-
-    print(html)
-
-
+    logger.debug("Calling Enagement.build()")
+    eng.build(
+        template=args.template,
+        url=args.url,
+        attachment=args.attachment,
+        attach_template=args.attach_template,
+        attach_params=args.attach_params
+    )
+    logger.debug("Engagement.build() complete")
+    print(eng.body)
 
     return 0
 
@@ -131,7 +77,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Override HTML template file (path or name in package templates)"
     )
     pr.add_argument(
-        "--attach",
+        "--attachment",
         help="Use an existing file as attachment (pass-through, no variable replacement)"
     )
     pr.add_argument(
@@ -143,7 +89,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Parameters to send use with Jinja to fill in the template"
     )
     pr.add_argument(
-        "--malicious-url",
+        "--url",
         help="The URL pointing to the phishing infrastructure"
     )
 
@@ -155,8 +101,14 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    if args.very_verbose:
+        logging.setLevel(logging.DEBUG)
+    elif args.verbose:
+        logging.setLevel(logging.INFO)
+
     if args.version:
-        print(version(PKG_NAME))
+        print(f"ophishal v{version(PKG_NAME)}")
+        return 0
 
     match args.command:
         case "render":

@@ -2,7 +2,7 @@
 import pytest
 import json
 from pathlib import Path
-from ophishal.engagement.engagement import Engagement
+from ophishal.engagement import Engagement
 from ophishal.models import Employee, Department, Company
 
 

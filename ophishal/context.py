@@ -1,5 +1,5 @@
 # ophishal/context/context.py
-from ophishal.common.config import BaseConfig
+from ophishal.config import BaseConfig
 
 class Context(BaseConfig):
     require = {
@@ -14,5 +14,5 @@ class Context(BaseConfig):
         "current_events": list
     }
 
-    def parse(self, config: dict):
+    def _parse(self, config: dict):
         pass

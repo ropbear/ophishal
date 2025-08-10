@@ -1,7 +1,7 @@
 # ophishal/common/config.py
 import json
 from pathlib import Path
-from ophishal.common.util import resolve_target
+from ophishal.util import resolve_target
 from ophishal.models import Company, Department, Employee, Culture, Target
 
 class BaseConfig:
@@ -32,7 +32,7 @@ class BaseConfig:
             raise ValueError("No valid configuration parameter specified")
 
         self.__common(config)
-        self.parse(config)
+        self._parse(config)
 
     def __from_file(self, filepath:Path) -> dict:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -90,7 +90,7 @@ class BaseConfig:
         self.tech = config["tech"]
         self.current_events = config["current_events"]
 
-    def parse(self, config:dict):
+    def _parse(self, config:dict):
         """
         Classes which inherit this base class will use this function to
         parse out the details they need from the dictionary.

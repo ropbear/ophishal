@@ -2,13 +2,16 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Microsoft Teams Meeting</title>
+  <title>{{ subject }}</title>
 </head>
 <body style="background:white; font-family:'Segoe UI', sans-serif; color:#252424; font-size:14px; line-height:1.5;">
 
   <!-- Event Title -->
   <p style="margin-bottom:12px; font-size:14px; color:black;">
-    {{ body }}
+    <p>Team,</p>
+    <p>We need to sync up quick on the VR deployment.</p>
+    <p>Best,</p>
+    <p>{{ sender.first_name }}</p>
   </p>
 
   <!-- Divider -->
@@ -28,7 +31,7 @@
 
   <!-- Main Join Link -->
   <p style="margin:4px 0;">
-    <a href="{{ callback }}" target="_blank" style="font-size:10.5pt; font-weight:600; color:#6264A7;">
+    <a href="{{ url }}" target="_blank" style="font-size:10.5pt; font-weight:600; color:#6264A7;">
       Click here to join the meeting
     </a>
   </p>
@@ -38,7 +41,7 @@
     <a href="https://aka.ms/JoinTeamsMeeting" target="_blank" style="font-size:10.5pt; color:#6264A7; text-decoration:none;">
       Learn More
     </a> |
-    <a href="{{ callback }}" target="_blank" style="font-size:10.5pt; color:#6264A7; text-decoration:none;">
+    <a href="{{ url }}" target="_blank" style="font-size:10.5pt; color:#6264A7; text-decoration:none;">
       Meeting options
     </a>
   </p>

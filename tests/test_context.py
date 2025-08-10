@@ -2,7 +2,7 @@
 import json
 import pytest
 from pathlib import Path
-from ophishal.context.context import Context
+from ophishal.context import Context
 from ophishal.models import Company, Department, Employee
 
 CTX_FILE = Path(__file__).resolve().parent.parent / "examples" / "context.json"

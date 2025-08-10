@@ -84,7 +84,10 @@
     "Hiring freeze announced in non-engineering departments"
   ],
 
-  "pretext":"",
+  "medium":"email",
+  "pretext":"Randy wants to have a meeting in the next hour about the upcoming SP MetaVerse launch and wants people to read a docx read-ahead with macro-enabled graphics.",
+  "desired_action": "download docx and enable macros",
+  "constraints": ["no spoofing legal department"],
 
   "subject": "Action Required: Q3 Financials Access Expiration"
 }

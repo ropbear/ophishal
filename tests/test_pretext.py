@@ -2,7 +2,7 @@
 import pytest
 import json
 from pathlib import Path
-from ophishal.pretext.pretext import Pretext
+from ophishal.pretext import Pretext
 
 
 PRETEXT_FILE = Path(__file__).resolve().parent.parent / "examples" / "pretext.json"
