@@ -16,7 +16,10 @@ def output_data(content: str | bytes, path: str | None):
     logger.debug("Attempting to write to %s", path)
     if path is None or path == "-":
         logger.info("Writing to stdout")
-        sys.stdout.write(content)
+        if type(content) == str:
+            sys.stdout.write(content)
+        else:
+            sys.stdout.buffer.write(content)
         return
 
     path = Path(path)

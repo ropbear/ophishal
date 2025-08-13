@@ -85,7 +85,7 @@ class Engagement(BaseConfig):
 
         if url is not None:
             self.url = url
-        else:
+        elif not hasattr(self, "url"):
             self.url = ""
             self.logger.warning("No URL for phishing infrastructure provided")
 
