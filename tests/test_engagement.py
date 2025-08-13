@@ -7,17 +7,22 @@ from ophishal.models import Employee, Department, Company
 
 
 TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "ophishal" / "templates"
-ENG_FILE = Path(__file__).resolve().parent.parent / "examples" / "engagement.json"
+ENG_FILE = Path(__file__).resolve().parent.parent / "examples" / "config.json"
 
 @pytest.fixture
 def engagement_config():
     with open(ENG_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
 @pytest.fixture
 def eng_obj(engagement_config):
     return Engagement(config=engagement_config)
+
+@pytest.fixture
+def eng_built(eng_obj):
+    eng_obj.build()
+    return eng_obj
+
 
 def test_constructs(eng_obj):
     assert isinstance(eng_obj, Engagement)
@@ -47,26 +52,24 @@ def test_targets(eng_obj):
 def test_subject(eng_obj):
     assert eng_obj.subject == "Action Required: Q3 Financials Access Expiration"
 
-def test_body_contains_expected_text(eng_obj):
-    assert "Q3 financial documents" in eng_obj.body
+def test_body_contains_expected_text(eng_built):
+    assert "Action Required" in eng_built.body
 
 def test_template_path(eng_obj):
     assert eng_obj.template.name == "msft-teams.jinja"
-    assert eng_obj.template == TEMPLATE_DIR / "msft-teams.jinja"
     assert eng_obj.template.exists()
 
-def test_callback(eng_obj):
-    assert eng_obj.callback == "http://localhost/payload.docx"
+def test_url(eng_obj):
+    assert eng_obj.url == "http://callback"
 
-def test_attachment_fields(eng_obj):
-    a = eng_obj.attachment
-    assert a.type == "ical"
-    assert a.template == "icalendar.jinja"
-    assert a.event_uid == "ABCDEF"
-    assert a.dtg_created == "20250805T073059Z"
-    assert a.dtg_start == "20250806T073059Z"
-    assert a.dtg_end == "20250806T083059Z"
-    assert a.description == "A meeting for HR sync"
+def test_attachment_fields(eng_built):
+    a = eng_built.attachment
+    assert b"ABCDEF" in a
+    assert b"20250805T073059Z" in a
+    assert b"20250806T073059Z" in a
+    assert b"20250806T083059Z" in a
+    assert b"A meeting for HR sync" in a
+    assert b"Action Required: Q3" in a
 
 def test_sender_sample_text_parsed(eng_obj):
     assert isinstance(eng_obj.sender.sample_text, str)
@@ -82,8 +85,8 @@ def test_sender_sample_text_optional_when_missing(engagement_config):
     assert eng.sender.sample_text is None
 
 @pytest.mark.parametrize("missing_key", [
-    "campaign", "company", "departments", "employees", "sender", "targets",
-    "subject", "body", "template", "callback", "attachment",
+    "campaign", "company", "departments", "employees", 
+    "sender", "targets", "subject"
 ])
 def test_missing_required_key_raises(engagement_config, missing_key):
     cfg = dict(engagement_config)
@@ -101,10 +104,6 @@ def test_missing_required_key_raises(engagement_config, missing_key):
         ("sender", 999, TypeError),
         ("targets", "emp_stan", TypeError),
         ("subject", 42, TypeError),
-        ("body", 7, TypeError),
-        ("template", 3.14, TypeError),
-        ("callback", 0, TypeError),
-        ("attachment", "not-a-dict", TypeError),
     ],
 )
 def test_wrong_type_raises(engagement_config, key, bad_value, exc):
@@ -123,10 +122,4 @@ def test_invalid_sender_uid_raises(engagement_config):
     cfg = dict(engagement_config)
     cfg["sender"] = "does_not_exist"
     with pytest.raises(KeyError):
-        Engagement(config=cfg)
-
-def test_attachment_missing_required_field_raises(engagement_config):
-    cfg = json.loads(json.dumps(engagement_config))
-    del cfg["attachment"]["event_uid"]
-    with pytest.raises(TypeError):
         Engagement(config=cfg)

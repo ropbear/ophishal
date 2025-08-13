@@ -89,5 +89,18 @@
   "desired_action": "download docx and enable macros",
   "constraints": ["no spoofing legal department"],
 
-  "subject": "Action Required: Q3 Financials Access Expiration"
+  "subject": "Action Required: Q3 Financials Access Expiration",
+  "template":"msft-teams.jinja",
+  "url":"http://callback",
+  "attach_template":"icalendar.jinja",
+  "attach_params":{
+    "dtg_start":"20250806T073059Z",
+    "dtg_created":"20250805T073059Z",
+    "dtg_end":"20250806T083059Z",
+    "description":"A meeting for HR sync",
+    "event_uid":"ABCDEF",
+    "organizer_email":"randy@localhost",
+    "organizer_name":"Randy Marsh",
+    "summary":"Action Required: Q3 Financials Access Expiration"
+  }
 }

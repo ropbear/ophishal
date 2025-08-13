@@ -5,7 +5,7 @@ from pathlib import Path
 from ophishal.pretext import Pretext
 
 
-PRETEXT_FILE = Path(__file__).resolve().parent.parent / "examples" / "pretext.json"
+PRETEXT_FILE = Path(__file__).resolve().parent.parent / "examples" / "config.json"
 
 
 @pytest.fixture

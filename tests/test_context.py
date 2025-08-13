@@ -5,7 +5,7 @@ from pathlib import Path
 from ophishal.context import Context
 from ophishal.models import Company, Department, Employee
 
-CTX_FILE = Path(__file__).resolve().parent.parent / "examples" / "context.json"
+CTX_FILE = Path(__file__).resolve().parent.parent / "examples" / "config.json"
 
 @pytest.fixture
 def context_config():

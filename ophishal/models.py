@@ -46,14 +46,4 @@ class Culture:
     country_code: str
     workplace: str
 
-@dataclass
-class Attachment:
-    type: str
-    template: str
-    event_uid: str
-    dtg_created: str
-    dtg_start: str
-    dtg_end: str
-    description: str
-
 Target = Union[Employee, Department, Company]

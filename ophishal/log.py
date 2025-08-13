@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 
-DEFAULT_LOG_LEVEL = logging.WARNING
+LOG_LEVEL = logging.WARNING
 LOG_COLORS = {
     logging.DEBUG: "\033[1;37m",
     logging.INFO: "\033[1;32m",
@@ -21,12 +21,17 @@ class Formatter(logging.Formatter):
         timestamp = datetime.now().strftime("%Y-%m-%d-%H:%M:%S.%f")[:-3]
         log_message = super().format(record)
         level_color = LOG_COLORS.get(record.levelno, COLOR_BASE)
-        levelname_centered = level_color + record.levelname.center(10) + COLOR_END
-        return f"[{levelname_centered}][{timestamp}][{record.filename}:{record.lineno}] {log_message}"
+        level_name = record.levelname.upper().strip()[0:4] if record.levelno != logging.DEBUG else "DBUG"
+        levelname_centered = level_color + level_name + COLOR_END
+        return f"[{levelname_centered}][{timestamp}][ophishal:{record.filename}:{record.lineno}] {log_message}"
+
+def setLogLevel(level:int):
+    global LOG_LEVEL
+    LOG_LEVEL = level
 
 def create_logger(title:str) -> Formatter:
     logger = logging.getLogger(title)
-    logger.setLevel(DEFAULT_LOG_LEVEL)
+    logger.setLevel(LOG_LEVEL)
     handler = logging.StreamHandler()
     handler.setFormatter(Formatter('%(message)s'))
     logger.addHandler(handler)
