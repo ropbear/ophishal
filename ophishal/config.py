@@ -44,7 +44,7 @@ class BaseConfig:
         These configuration attributes are going to be common across all
         proponents of the program.
         """
-        logger = create_logger("BaseConfig:__common")
+        logger = create_logger("config:common")
 
         self.campaign = config["campaign"]
         logger.info("Parsing %s campaign configuration file", self.campaign)
@@ -92,7 +92,7 @@ class BaseConfig:
         # support sender as department or employee
         self.sender = resolve_uid(config["sender"], self)
         self.targets = [resolve_uid(uid, self) for uid in config["targets"]]
-        self.culture = Culture(**config["culture"]) if "culture" in config else None
+        self.culture = config["culture"] if "culture" in config else None
         self.tech = config["tech"] if "tech" in config else None
         self.current_events = config["current_events"] if "current_events" in config else None
 

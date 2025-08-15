@@ -25,11 +25,4 @@ class Employee:
     phone: Optional[str]
     reports_to: Optional["Employee"]
 
-@dataclass
-class Culture:
-    city: str
-    province: str
-    country_code: str
-    workplace: str
-
 Target = Union[Employee, Department, Company]
