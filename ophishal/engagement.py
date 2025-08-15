@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 import jinja2
-from ophishal.util import resolve_target
+from ophishal.util import resolve_uid
 from ophishal.config import BaseConfig
 from ophishal.log import create_logger
 
@@ -68,6 +68,8 @@ class Engagement(BaseConfig):
             self.attach_params = config["attach_params"]
         if "attachment_file" in config:
             self.attachment = _resolve_template_path(config["attachment_file"]).read_bytes()
+        if "server" in config:
+            self.server = config["server"]
 
     def build(
         self,
@@ -75,13 +77,19 @@ class Engagement(BaseConfig):
         url: str | None = None,
         attachment: str | None = None, 
         attach_template: str | None = None,
-        attach_params: dict | None = None
+        attach_params: dict | None = None,
+        server: str | None = None
     ):
         """
         Sets the Engagement object html and attachment attributes using
         either the configuration file or the provided CLI arguments,
         or a combination of both.
         """
+
+        if server is not None:
+            self.server = server
+        else:
+            self.logger.warning("No server specified")
 
         if url is not None:
             self.url = url
@@ -94,13 +102,20 @@ class Engagement(BaseConfig):
             self.attachment = _resolve_template_path(attachment).read_bytes()
         elif attach_template is not None:
             self.attach_template = _resolve_template_path(attach_template)
-            self.attach_params = json.loads(attach_params)
+            if attach_params is not None:
+                self.attach_params = json.loads(attach_params)
+            elif self.attach_params is None:
+                self.attach_params = {}
 
         if self.attach_template is not None and not hasattr(self, "attachment"):
             self.attachment = _render_template(
                 self.attach_template,
                 self.attach_params
-            ).encode("utf-8")
+            )
+            if self.attachment is None:
+                self.logger.error("Failed to create attachment, no attachment")
+            else:
+                self.attachment = self.attachment.encode("utf-8")
         if not hasattr(self, "attachment"):
             self.attachment = None
 

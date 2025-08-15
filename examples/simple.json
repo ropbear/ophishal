@@ -1,0 +1,43 @@
+{
+  "campaign": "simple-example",
+
+  "company": {
+    "uid": "company"
+  },
+
+  "departments": [
+    {
+      "uid": "hr",
+      "name": "Human Resources",
+      "email":"hr@localhost"
+    }
+  ],
+
+  "employees": [
+    {
+      "uid": "jdoe",
+      "email": "jdoe@localhost",
+      "name":"John Doe"
+    }
+  ],
+
+  "sender": "hr",
+  "targets": ["jdoe"],
+
+  "subject": "HR Meeting",
+  "template":"msft-teams.jinja",
+  "server":"192.168.222.121",
+  "url":"http://192.168.45.241",
+  "attach_template":"icalendar.jinja",
+  "attach_params":{
+    "filename":"invite",
+    "dtg_start":"20250814T073059Z",
+    "dtg_created":"20250813T073059Z",
+    "dtg_end":"20250814T083059Z",
+    "description":"A meeting for HR sync",
+    "event_uid":"a0jlWx",
+    "organizer_email":"hr@localhost",
+    "organizer_name":"Human Resources",
+    "summary":"HR Meeting"
+  }
+}

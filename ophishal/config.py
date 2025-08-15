@@ -1,8 +1,9 @@
 # ophishal/common/config.py
 import json
 from pathlib import Path
-from ophishal.util import resolve_target
-from ophishal.models import Company, Department, Employee, Culture, Target
+from ophishal.util import resolve_uid
+from ophishal.model import Company, Department, Employee, Culture, Target
+from ophishal.log import create_logger
 
 class BaseConfig:
     require = {}
@@ -43,37 +44,42 @@ class BaseConfig:
         These configuration attributes are going to be common across all
         proponents of the program.
         """
-        self.company = Company(**config["company"])
+        logger = create_logger("BaseConfig:__common")
+
+        self.campaign = config["campaign"]
+        logger.info("Parsing %s campaign configuration file", self.campaign)
+
+        c = config["company"]
+        self.company = Company(
+            uid=c["uid"]
+        )
+        logger.debug("Added company with uid: %s", self.company.uid)
 
         self.departments = {
             d["uid"]: Department(
                 uid=d["uid"],
-                name=d["name"],
+                name=d.get("name"),
                 company=self.company,
-                head=None  # placeholder
+                head=None,
+                email=d.get("email")
             )
             for d in config["departments"]
         }
+        logger.debug("Added %d departments", len(self.departments))
+
         self.employees = {
             e["uid"]: Employee(
                 uid=e["uid"],
-                first_name=e["first_name"],
-                last_name=e["last_name"],
-                nickname=e.get("nickname"),
-                username=e["username"],
-                department=self.departments[e["department_uid"]],
-                work_title=e["work_title"],
-                signature_block=e["signature_block"],
-                work_email=e.get("work_email"),
-                work_phone=e.get("work_phone"),
-                personal_email=e.get("personal_email"),
-                personal_phone=e.get("personal_phone"),
-                location=e["location"],
-                reports_to=None,
-                sample_text=e.get("sample_text")
+                name=e["name"],
+                username=e["username"] if "username" in e else "",
+                department=self.departments[e["department_uid"]] if "department_uid" in e else None,
+                email=e.get("email"),
+                phone=e.get("phone"),
+                reports_to=None
             )
             for e in config["employees"]
         }
+        logger.debug("Added %d employees", len(self.employees))
 
         for dept in config["departments"]:
             if dept.get("head_uid"):
@@ -83,12 +89,12 @@ class BaseConfig:
             if e.get("reports_to"):
                 self.employees[e["uid"]].reports_to = self.employees[e["reports_to"]]
 
-        self.campaign = config["campaign"]
-        self.sender = self.employees[config["sender"]]
-        self.targets = [resolve_target(uid, self) for uid in config["targets"]]
-        self.culture = Culture(**config["culture"])
-        self.tech = config["tech"]
-        self.current_events = config["current_events"]
+        # support sender as department or employee
+        self.sender = resolve_uid(config["sender"], self)
+        self.targets = [resolve_uid(uid, self) for uid in config["targets"]]
+        self.culture = Culture(**config["culture"]) if "culture" in config else None
+        self.tech = config["tech"] if "tech" in config else None
+        self.current_events = config["current_events"] if "current_events" in config else None
 
     def _parse(self, config:dict):
         """

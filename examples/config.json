@@ -24,34 +24,28 @@
   "employees": [
     {
       "uid": "emp_randy",
-      "first_name": "Randy",
-      "last_name": "Marsh",
+      "name": "Randy Marsh",
       "nickname": "Randy",
       "username": "rmarsh",
       "department_uid": "eng",
       "work_title": "Director of Engineering",
       "signature_block": "Randy Marsh | Director of Engineering",
-      "work_email": "randy@localhost",
-      "work_phone": "(303) 555-1001",
-      "personal_email": "randy.marsh@example.com",
-      "personal_phone": "(303) 555-2001",
+      "email": "randy@localhost",
+      "phone": "(303) 555-1001",
       "location": "South Park, CO",
       "reports_to": null,
       "sample_text": "Team—let’s keep it tight. Need a quick sync on the VR launch blockers today."
     },
     {
       "uid": "emp_stan",
-      "first_name": "Stan",
-      "last_name": "Marsh",
+      "name": "Stan Marsh",
       "nickname": "Stan",
       "username": "smarsh",
       "department_uid": "eng",
       "work_title": "Software Engineer I",
       "signature_block": "Stan Marsh | Software Engineer I",
-      "work_email": "stan@localhost",
-      "work_phone": null,
-      "personal_email": "stan@example.com",
-      "personal_phone": "(303) 555-2020",
+      "email": "stan@localhost",
+      "phone": null,
       "location": "South Park, CO",
       "reports_to": "emp_randy",
       "sample_text": "I can take a look after stand-up. If it’s urgent, ping me on Slack."
@@ -59,7 +53,7 @@
   ],
 
   "sender": "emp_randy",
-  "targets": ["emp_stan"],
+  "targets": ["emp_stan", "emp_randy"],
 
   "culture": {
     "city":"South Park",
@@ -91,9 +85,11 @@
 
   "subject": "Action Required: Q3 Financials Access Expiration",
   "template":"msft-teams.jinja",
+  "server":"192.168.1.25",
   "url":"http://callback",
   "attach_template":"icalendar.jinja",
   "attach_params":{
+    "filename":"invite",
     "dtg_start":"20250806T073059Z",
     "dtg_created":"20250805T073059Z",
     "dtg_end":"20250806T083059Z",
