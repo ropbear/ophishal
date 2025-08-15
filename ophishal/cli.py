@@ -13,7 +13,7 @@ PKG_NAME = "ophishal"
 
 
 def output_data(content: str | bytes, path: str | None):
-    logger = create_logger("main:output")
+    logger = create_logger("output_data")
     logger.debug("Attempting to write to %s", path)
     if path is None or path == "-":
         logger.info("Writing to stdout")
@@ -36,7 +36,7 @@ def output_data(content: str | bytes, path: str | None):
             f.write(content)
 
 def cmd_email(args) -> int:
-    logger = create_logger("main:email")
+    logger = create_logger("command:email")
     eng = Engagement(filepath=Path(args.config))
 
     if eng is None:
@@ -75,7 +75,8 @@ def cmd_email(args) -> int:
 
     if args.dryrun:
         return 0
-    return send_email(eng)
+    if hasattr(eng, "server"):
+        return send_email(eng)
 
 
 def build_parser() -> argparse.ArgumentParser:

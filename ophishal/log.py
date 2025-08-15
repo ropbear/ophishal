@@ -23,7 +23,7 @@ class Formatter(logging.Formatter):
         level_color = LOG_COLORS.get(record.levelno, COLOR_BASE)
         level_name = record.levelname.upper().strip()[0:4] if record.levelno != logging.DEBUG else "DBUG"
         levelname_centered = level_color + level_name + COLOR_END
-        return f"[{levelname_centered}][{timestamp}][ophishal:{record.filename}:{record.lineno}] {log_message}"
+        return f"[{levelname_centered}][{timestamp}][ophishal:{record.filename}:{record.lineno}]{log_message}"
 
 def setLogLevel(level:int):
     global LOG_LEVEL
@@ -33,6 +33,6 @@ def create_logger(title:str) -> Formatter:
     logger = logging.getLogger(title)
     logger.setLevel(LOG_LEVEL)
     handler = logging.StreamHandler()
-    handler.setFormatter(Formatter('%(message)s'))
+    handler.setFormatter(Formatter(f'[{title}] %(message)s'))
     logger.addHandler(handler)
     return logger

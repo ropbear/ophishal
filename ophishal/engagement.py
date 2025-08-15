@@ -53,23 +53,32 @@ class Engagement(BaseConfig):
         "targets": list,
         "subject": str
     }
-    logger = create_logger("engagement")
 
 
     def _parse(self, config: dict):
+        logger = create_logger("Engagement.parse")
+        # required
         self.subject = config["subject"]
+
+        # optional, can also be specified via command line which will override these values
         if "template" in config:
             self.template = _resolve_template_path(config["template"])
+            logger.debug("Added template from configuration file")
         if "url" in config:
             self.url = config["url"]
+            logger.debug("Added url from configuration file")
         if "attach_template" in config:
             self.attach_template = _resolve_template_path(config["attach_template"])
+            logger.debug("Added attachment template from configuration file")
         if "attach_params" in config:
             self.attach_params = config["attach_params"]
+            logger.debug("Added attachment template parameters from configuration file")
         if "attachment_file" in config:
             self.attachment = _resolve_template_path(config["attachment_file"]).read_bytes()
+            logger.debug("Added attachment file from configuration file")
         if "server" in config:
             self.server = config["server"]
+            logger.debug("Added server from configuration file")
 
     def build(
         self,
@@ -85,17 +94,18 @@ class Engagement(BaseConfig):
         either the configuration file or the provided CLI arguments,
         or a combination of both.
         """
+        logger = create_logger("Engagement.build")
 
         if server is not None:
             self.server = server
-        else:
-            self.logger.warning("No server specified")
+        elif not hasattr(self, "server"):
+            logger.error("No server specified, cannot send email")
 
         if url is not None:
             self.url = url
         elif not hasattr(self, "url"):
             self.url = ""
-            self.logger.warning("No URL for phishing infrastructure provided")
+            logger.warning("No URL for phishing infrastructure provided")
 
         # allow attachment param to override all
         if attachment is not None:
@@ -113,7 +123,7 @@ class Engagement(BaseConfig):
                 self.attach_params
             )
             if self.attachment is None:
-                self.logger.error("Failed to create attachment, no attachment")
+                logger.error("Failed to create attachment, no attachment")
             else:
                 self.attachment = self.attachment.encode("utf-8")
         if not hasattr(self, "attachment"):
@@ -125,7 +135,7 @@ class Engagement(BaseConfig):
             self.template = _resolve_template_path(template)
         elif not hasattr(self, "template"):
             # template attribute was not set during _parse()
-            self.logger.error("No template specified for building body")
+            logger.error("No template specified for building body")
             raise ValueError
 
         template_params = {
@@ -135,3 +145,4 @@ class Engagement(BaseConfig):
             "url": self.url
         }
         self.body = _render_template(self.template, template_params)
+        logger.debug("Created HTML body from template %s", self.template)

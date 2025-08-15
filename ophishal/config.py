@@ -44,10 +44,10 @@ class BaseConfig:
         These configuration attributes are going to be common across all
         proponents of the program.
         """
-        logger = create_logger("config:common")
+        logger = create_logger("BaseConfig.common")
 
         self.campaign = config["campaign"]
-        logger.info("Parsing %s campaign configuration file", self.campaign)
+        logger.info('Parsing campaign "%s"', self.campaign)
 
         c = config["company"]
         self.company = Company(
