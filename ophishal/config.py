@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 from ophishal.util import resolve_uid
-from ophishal.model import Company, Department, Employee, Culture, Target
+from ophishal.model import Company, Department, Employee, Target
 from ophishal.log import create_logger
 
 class BaseConfig:
