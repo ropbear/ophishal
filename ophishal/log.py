@@ -46,6 +46,3 @@ def create_logger(title:str) -> Formatter:
         handler.setFormatter(Formatter(f'[{title}] %(message)s'))
         logger.addHandler(handler)
     return logger
-
-def destroyLogger(title:str):
-    passz
