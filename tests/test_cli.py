@@ -171,7 +171,7 @@ def test_email_basic_params_nc_very_verbose_flag_output(capsys):
     err = capsys.readouterr().err.strip()
     assert '[DBUG]' in err
 
-# individual param unit tests
+# individual param (to stdout) unit tests
 
 def test_email_param_outupt_body_to_stdout(capsys):
     rc = run([
@@ -183,6 +183,21 @@ def test_email_param_outupt_body_to_stdout(capsys):
     assert rc == 0
     out = capsys.readouterr().out.strip()
     assert "<p>Randy Marsh</p>" in out
+
+def test_email_param_output_attach_to_stdout(capsys):
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--output-attach", "-",
+        "--dryrun",
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "BEGIN:VCALENDAR" in out
+    assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in out
+    assert "ORGANIZER;CN=Randy Marsh" in out
+
+# output to file unit tests
 
 def test_email_param_output_body_to_file(tmpdir):
     custom = tmpdir / "tmpl.jinja"
@@ -200,19 +215,6 @@ def test_email_param_output_body_to_file(tmpdir):
     s = out_html.read_text(encoding="utf-8")
     assert "X-TEST Randy Marsh" in s
 
-def test_email_param_output_attach_to_stdout(capsys):
-    rc = run([
-        "email",
-        "--config", str(CFG),
-        "--output-attach", "-",
-        "--dryrun",
-    ])
-    assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "BEGIN:VCALENDAR" in out
-    assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in out
-    assert "ORGANIZER;CN=Randy Marsh" in out
-
 def test_email_param_output_attach_to_file(tmpdir):
     out_ics = tmpdir / "invite.ics"
     rc = run([
@@ -227,9 +229,21 @@ def test_email_param_output_attach_to_file(tmpdir):
     assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in t
     assert "ORGANIZER;CN=Randy Marsh" in t
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_template_cli_override():
-    pass
+def test_attach_pass_through_attachment(tmpdir):
+    src = tmpdir / "file.txt"
+    src.write_text("abc", encoding="utf-8")
+    dst = tmpdir / "out.dat"
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--attachment", str(src),
+        "--dryrun",
+        "--output-attach", str(dst),
+    ])
+    assert rc == 0
+    assert dst.read_text(encoding="utf-8") == "abc"
+
+# file not found unit tests
 
 def test_email_param_template_missing(tmpdir):
     bad = tmpdir / "missing.jinja"
@@ -241,6 +255,22 @@ def test_email_param_template_missing(tmpdir):
             "--dryrun"
         ])
         assert rc == 2
+
+# cli override config file unit tests
+
+def test_email_param_template_cli_override(tmpdir, capsys):
+    custom = tmpdir / "tmpl.jinja"
+    custom.write_text("X-TEST {{ sender.name }}", encoding="utf-8")
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--template", str(custom),
+        "--output-body", "-",
+        "--dryrun"
+    ])
+    out = capsys.readouterr().out.strip()
+    assert "X-TEST" in out
+    assert "Microsoft Teams meeting" not in out
 
 @pytest.mark.xfail(reason="Not yet implemented")
 def test_email_param_attachment_cli_override():
@@ -301,35 +331,7 @@ def test_email_param_url_with_template_cli_override(tmpdir):
     s = out_html.read_text(encoding="utf-8")
     assert "X-TEST http://callback" in s
 
-# integration tests
-
-def test_attach_template_generates_ics_to_file(tmpdir):
-    out_ics = tmpdir / "invite.ics"
-    rc = run([
-        "email",
-        "--config", str(CFG),
-        "--dryrun",
-        "--output-attach", str(out_ics),
-    ])
-    assert rc == 0
-    t = out_ics.read_text(encoding="utf-8")
-    assert "BEGIN:VCALENDAR" in t
-    assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in t
-    assert "ORGANIZER;CN=Randy Marsh" in t
-
-def test_attach_pass_through_attachment(tmpdir):
-    src = tmpdir / "file.txt"
-    src.write_text("abc", encoding="utf-8")
-    dst = tmpdir / "out.dat"
-    rc = run([
-        "email",
-        "--config", str(CFG),
-        "--attachment", str(src),
-        "--dryrun",
-        "--output-attach", str(dst),
-    ])
-    assert rc == 0
-    assert dst.read_text(encoding="utf-8") == "abc"
+# template
 
 @pytest.mark.xfail(reason="Not yet implemented")
 def test_():
