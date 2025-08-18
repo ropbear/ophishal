@@ -5,9 +5,9 @@ This test suite relies on the following files:
 config.json
 - msft-teams.jinja
 - icalendar.jinja
-simple.json
+simple-attachment.json
 - msft-teams.jinja
-- icalendar.jinja
+- file.txt
 """
 
 import json
