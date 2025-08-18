@@ -37,7 +37,11 @@ def _render_template(template: Path, params: dict) -> str:
         logger.error("Template not found: %s", template)
         return None
     try:
-        return tmpl.render(**params)
+        if params is not None:
+            return tmpl.render(**params)
+        else:
+            logger.error("Template requires parameters, none provided")
+            return None
     except jinja2.exceptions.UndefinedError as e:
         logger.error("Variable missing from template parameters: %s", e)
         return None
@@ -80,14 +84,37 @@ class Engagement(BaseConfig):
             self.server = config["server"]
             logger.debug("Added server from configuration file")
 
+    def handle_attr(self, attr:str, val, required:bool = False):
+        logger = create_logger("Engagement.handle_attr")
+        if val is not None:
+            if hasattr(self, attr):
+                logger.warning(
+                    "Overwriting CLI provided attribute (attr|old|new): %s | %s | %s",
+                    attr,
+                    self.__getattribute__(attr),
+                    val
+                )
+            self.__setattr__(attr, val)
+            logger.debug("Set %s attribute from CLI", attr)
+        elif not hasattr(self, attr):
+            if not required:
+                self.__setattr__(attr, None)
+                logger.debug("Attribute %s not in config or CLI, setting to None", attr)
+            else:
+                logger.warning("No %s attribute specified", attr)
+                raise ValueError
+        else:
+            # param attr is None and attribute exists in self, do nothing
+            logger.debug("Using %s attribute from configuration", attr)
+
     def build(
         self,
         template: str | None = None,
-        url: str | None = None,
         attachment: str | None = None, 
         attach_template: str | None = None,
         attach_params: dict | None = None,
-        server: str | None = None
+        server: str | None = None,
+        url: str | None = None
     ):
         """
         Sets the Engagement object html and attachment attributes using
@@ -96,28 +123,25 @@ class Engagement(BaseConfig):
         """
         logger = create_logger("Engagement.build")
 
-        if server is not None:
-            self.server = server
-        elif not hasattr(self, "server"):
-            logger.error("No server specified, cannot send email")
+        tmpl_path = _resolve_template_path(template) if template is not None else None
+        self.handle_attr("template", tmpl_path, required=True)
 
-        if url is not None:
-            self.url = url
-        elif not hasattr(self, "url"):
-            self.url = ""
-            logger.warning("No URL for phishing infrastructure provided")
+        attachment_bytes = _resolve_template_path(attachment).read_bytes() if attachment is not None else None
+        self.handle_attr("attachment", attachment_bytes)
+        
+        attach_tmpl_path = _resolve_template_path(attach_template) if attach_template is not None else None
+        self.handle_attr("attach_template", attach_tmpl_path)
+        
+        attach_params_dict = json.loads(attach_params) if attach_params else None
+        self.handle_attr("attach_params", attach_params_dict)
+        
+        self.handle_attr("server", server, required=True)
+        self.handle_attr("url", url, False)
 
-        # allow attachment param to override all
-        if attachment is not None:
-            self.attachment = _resolve_template_path(attachment).read_bytes()
-        elif attach_template is not None:
-            self.attach_template = _resolve_template_path(attach_template)
-            if attach_params is not None:
-                self.attach_params = json.loads(attach_params)
-            elif self.attach_params is None:
-                self.attach_params = {}
-
-        if hasattr(self, "attach_template") and not hasattr(self, "attachment"):
+        if self.attachment is not None:
+            # if self.attachment exists, it remains unchanged
+            pass
+        elif self.attach_template is not None:
             self.attachment = _render_template(
                 self.attach_template,
                 self.attach_params
@@ -126,18 +150,6 @@ class Engagement(BaseConfig):
                 logger.error("Failed to create attachment, no attachment")
             else:
                 self.attachment = self.attachment.encode("utf-8")
-        elif not hasattr(self, "attachment"):
-            self.attachment = None
-        
-        # if self.attachment exists, it remains unchanged
-
-        # set body
-        if template is not None:
-            self.template = _resolve_template_path(template)
-        elif not hasattr(self, "template"):
-            # template attribute was not set during _parse()
-            logger.error("No template specified for building body")
-            raise ValueError
 
         template_params = {
             "sender": self.sender,

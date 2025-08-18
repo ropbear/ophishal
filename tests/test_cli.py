@@ -325,10 +325,11 @@ def test_email_param_attach_params_cli_override(capsys):
     assert rc == 0
     out = capsys.readouterr().out.strip()
     assert "20250806T073059Z" not in out
-    assert "19700101T000000Z" not in out
+    assert "19700101T000000Z" in out
 
 def test_email_param_server_cli_override(capsys):
     rc = run([
+            "-vv",
             "email",
             "--config", str(CFG),
             "--server",
