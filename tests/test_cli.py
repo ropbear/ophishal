@@ -288,17 +288,56 @@ def test_email_param_attachment_cli_override(tmpdir, capsys):
     assert "abc123" in out
     assert "testfile" not in out
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_attach_template_cli_override():
-    pass
+def test_email_param_attach_template_cli_override(tmpdir, capsys):
+    custom = tmpdir / "tmpl.jinja"
+    custom.write_text("TEST:{{ dtg_start }}", encoding="utf-8")
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--attach-template", str(custom),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "TEST:20250806T073059Z" in out
+    assert "DTSTART;TZID=UTC:" not in out
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_attach_params_cli_override():
-    pass
+def test_email_param_attach_params_cli_override(capsys):
+    params = {
+        "filename":"test",
+        "dtg_start":"19700101T000000Z",
+        "dtg_created":"19700101T000000Z",
+        "dtg_end":"19700101T000000Z",
+        "description":"test",
+        "event_uid":"test",
+        "organizer_email":"randy@test",
+        "organizer_name":"Mandy Rarsh",
+        "summary":"test"
+    }
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--attach-params", json.dumps(params),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "20250806T073059Z" not in out
+    assert "19700101T000000Z" not in out
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_server_cli_override():
-    pass
+def test_email_param_server_cli_override(capsys):
+    rc = run([
+            "email",
+            "--config", str(CFG),
+            "--server",
+            "THISISNOTANIPADDRESS",
+            "--dryrun"
+    ])
+    assert rc == 0
+    err = capsys.readouterr().err
+    assert "THISISNOTANIPADDRESS" in err
 
 def test_email_param_url_cli_override(capsys):
     rc = run([
