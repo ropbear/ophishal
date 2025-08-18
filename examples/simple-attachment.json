@@ -1,0 +1,32 @@
+{
+  "campaign": "simple-example",
+
+  "company": {
+    "uid": "company"
+  },
+
+  "departments": [
+    {
+      "uid": "hr",
+      "name": "Human Resources",
+      "email":"hr@localhost"
+    }
+  ],
+
+  "employees": [
+    {
+      "uid": "jdoe",
+      "email": "jdoe@localhost",
+      "name":"John Doe"
+    }
+  ],
+
+  "sender": "hr",
+  "targets": ["jdoe"],
+
+  "subject": "HR Meeting",
+  "template":"msft-teams.jinja",
+  "server":"127.0.0.1",
+  "url":"http://192.168.45.241",
+  "attachment":"file.txt"
+}

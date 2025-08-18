@@ -22,6 +22,7 @@ from ophishal.log import LOG_COLORS
 ROOT = Path(__file__).resolve().parents[1]
 CFG = ROOT / "examples" / "config.json"
 MIN_CFG = ROOT / "examples" / "simple.json"
+MIN_ATTACH_CFG = ROOT / "examples" / "simple-attachment.json"
 PKG_TEMPLATES = ROOT / "ophishal" / "templates"
 PYPROJECT = ROOT / "pyproject.toml"
 
@@ -272,9 +273,20 @@ def test_email_param_template_cli_override(tmpdir, capsys):
     assert "X-TEST" in out
     assert "Microsoft Teams meeting" not in out
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_attachment_cli_override():
-    pass
+def test_email_param_attachment_cli_override(tmpdir, capsys):
+    custom = tmpdir / "newfile.txt"
+    custom.write_text("abc123", encoding="utf-8")
+    rc = run([
+        "email",
+        "--config", str(MIN_ATTACH_CFG),
+        "--attachment", str(custom),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "abc123" in out
+    assert "testfile" not in out
 
 @pytest.mark.xfail(reason="Not yet implemented")
 def test_email_param_attach_template_cli_override():

@@ -5,7 +5,7 @@ from pathlib import Path
 from logging import DEBUG, INFO
 from importlib.metadata import version, PackageNotFoundError
 from ophishal.engagement import Engagement
-from ophishal.log import create_logger, setLogLevel
+from ophishal.log import create_logger, setLogLevel, setLogColor
 from ophishal.email import send_email
 
 
@@ -101,6 +101,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Very verbose (DEBUG)"
     )
+    parser.add_argument(
+        "-nc",
+        "--no-color",
+        action="store_true",
+        help="Do not include ANSI color escape sequences"
+    )
 
     cmds = parser.add_subparsers(
         dest="command",
@@ -161,6 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    if args.no_color:
+        setLogColor(False)
+
     if args.very_verbose:
         setLogLevel(DEBUG)
     elif args.verbose:
@@ -174,7 +183,7 @@ def main(argv: list[str] | None = None) -> int:
         case "email":
             return cmd_email(args)
         case _:
-            print(f"Unknown command {args.command}")
+            print(f"Unknown command not caught by argparse (maybe argparse bug): {args.command}")
     parser.print_help()
     return 1
 

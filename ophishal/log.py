@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 LOG_LEVEL = logging.WARNING
+LOG_COLOR = True
 LOG_COLORS = {
     logging.DEBUG: "\033[1;37m",
     logging.INFO: "\033[1;32m",
@@ -22,12 +23,16 @@ class Formatter(logging.Formatter):
         log_message = super().format(record)
         level_color = LOG_COLORS.get(record.levelno, COLOR_BASE)
         level_name = record.levelname.upper().strip()[0:4] if record.levelno != logging.DEBUG else "DBUG"
-        levelname_centered = level_color + level_name + COLOR_END
+        levelname_centered = level_color + level_name + COLOR_END if LOG_COLOR else level_name
         return f"[{levelname_centered}][{timestamp}][ophishal:{record.filename}:{record.lineno}]{log_message}"
 
 def setLogLevel(level:int):
     global LOG_LEVEL
     LOG_LEVEL = level
+
+def setLogColor(colored:bool):
+    global LOG_COLOR
+    LOG_COLOR = colored
 
 def create_logger(title:str) -> Formatter:
     logger = logging.getLogger(title)

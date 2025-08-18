@@ -117,7 +117,7 @@ class Engagement(BaseConfig):
             elif self.attach_params is None:
                 self.attach_params = {}
 
-        if self.attach_template is not None and not hasattr(self, "attachment"):
+        if hasattr(self, "attach_template") and not hasattr(self, "attachment"):
             self.attachment = _render_template(
                 self.attach_template,
                 self.attach_params
@@ -126,9 +126,10 @@ class Engagement(BaseConfig):
                 logger.error("Failed to create attachment, no attachment")
             else:
                 self.attachment = self.attachment.encode("utf-8")
-        if not hasattr(self, "attachment"):
+        elif not hasattr(self, "attachment"):
             self.attachment = None
-
+        
+        # if self.attachment exists, it remains unchanged
 
         # set body
         if template is not None:
