@@ -19,6 +19,7 @@ from logging import INFO
 from ophishal import cli
 from ophishal.log import LOG_COLORS
 
+
 ROOT = Path(__file__).resolve().parents[1]
 CFG = ROOT / "examples" / "config.json"
 MIN_ATTACH_CFG = ROOT / "examples" / "simple-attachment.json"
