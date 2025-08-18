@@ -29,7 +29,7 @@ def _resolve_template_path(name_or_path: str) -> Path:
 
 
 def _render_template(template: Path, params: dict) -> str:
-    logger = create_logger("engagement:render_template")
+    logger = create_logger("render_template")
     jinja_env = get_jinja_env(template.parent)
     try:
         tmpl = jinja_env.get_template(template.name)
@@ -58,9 +58,8 @@ class Engagement(BaseConfig):
         "subject": str
     }
 
-
     def _parse(self, config: dict):
-        logger = create_logger("Engagement.parse")
+        logger = create_logger("Engagement:parse")
         # required
         self.subject = config["subject"]
 
@@ -85,7 +84,7 @@ class Engagement(BaseConfig):
             logger.debug("Added server from configuration file")
 
     def handle_attr(self, attr:str, val, required:bool = False):
-        logger = create_logger("Engagement.handle_attr")
+        logger = create_logger("Engagement:handle_attr")
         if val is not None:
             if hasattr(self, attr):
                 logger.warning(
@@ -121,7 +120,7 @@ class Engagement(BaseConfig):
         either the configuration file or the provided CLI arguments,
         or a combination of both.
         """
-        logger = create_logger("Engagement.build")
+        logger = create_logger("Engagement:build")
 
         tmpl_path = _resolve_template_path(template) if template is not None else None
         self.handle_attr("template", tmpl_path, required=True)

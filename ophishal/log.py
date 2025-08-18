@@ -35,6 +35,8 @@ def setLogColor(colored:bool):
     LOG_COLOR = colored
 
 def create_logger(title:str) -> Formatter:
+    # note that getLogger will interpret periods as hierarchical structures
+    # https://docs.python.org/3/library/logging.html#logger-objects
     logger = logging.getLogger(title)
     logger.setLevel(LOG_LEVEL)
     handler = logging.StreamHandler()
