@@ -21,7 +21,6 @@ from ophishal.log import LOG_COLORS
 
 ROOT = Path(__file__).resolve().parents[1]
 CFG = ROOT / "examples" / "config.json"
-MIN_CFG = ROOT / "examples" / "simple.json"
 MIN_ATTACH_CFG = ROOT / "examples" / "simple-attachment.json"
 PKG_TEMPLATES = ROOT / "templates"
 PYPROJECT = ROOT / "pyproject.toml"
