@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CFG = ROOT / "examples" / "config.json"
 MIN_CFG = ROOT / "examples" / "simple.json"
 MIN_ATTACH_CFG = ROOT / "examples" / "simple-attachment.json"
-PKG_TEMPLATES = ROOT / "ophishal" / "templates"
+PKG_TEMPLATES = ROOT / "templates"
 PYPROJECT = ROOT / "pyproject.toml"
 
 
@@ -176,6 +176,20 @@ def test_email_param_output_attach_to_stdout(capsys):
     assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in out
     assert "ORGANIZER;CN=Randy Marsh" in out
 
+def test_email_attachment_passthru_to_stdout(tmpdir, capsys):
+    src = tmpdir / "file.txt"
+    src.write_text("abc", encoding="utf-8")
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--attachment", str(src),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    cap = capsys.readouterr()
+    assert "abc" in cap.out
+
 # output to file unit tests
 
 def test_email_param_output_body_to_file(tmpdir):
@@ -208,7 +222,7 @@ def test_email_param_output_attach_to_file(tmpdir):
     assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in t
     assert "ORGANIZER;CN=Randy Marsh" in t
 
-def test_attach_pass_through_attachment(tmpdir):
+def test_email_attachment_passthru_to_file(tmpdir):
     src = tmpdir / "file.txt"
     src.write_text("abc", encoding="utf-8")
     dst = tmpdir / "out.dat"
@@ -216,13 +230,23 @@ def test_attach_pass_through_attachment(tmpdir):
         "email",
         "--config", str(CFG),
         "--attachment", str(src),
-        "--dryrun",
         "--output-attach", str(dst),
+        "--dryrun"        
     ])
     assert rc == 0
     assert dst.read_text(encoding="utf-8") == "abc"
 
 # file not found unit tests
+
+def test_email_param_config_missing(tmpdir):
+    bad = tmpdir / "missing.json"
+    with pytest.raises(FileNotFoundError):
+        rc = run([
+            "email",
+            "--config", str(bad),
+            "--dryrun"
+        ])
+        assert rc == 2
 
 def test_email_param_template_missing(tmpdir):
     bad = tmpdir / "missing.jinja"
@@ -231,6 +255,28 @@ def test_email_param_template_missing(tmpdir):
             "email",
             "--config", str(CFG),
             "--template", str(bad),
+            "--dryrun"
+        ])
+        assert rc == 2
+
+def test_email_param_attachment_missing(tmpdir):
+    bad = tmpdir / "missing.jinja"
+    with pytest.raises(FileNotFoundError):
+        rc = run([
+            "email",
+            "--config", str(CFG),
+            "--attachment", str(bad),
+            "--dryrun"
+        ])
+        assert rc == 2
+
+def test_email_param_attach_template_missing(tmpdir):
+    bad = tmpdir / "missing.jinja"
+    with pytest.raises(FileNotFoundError):
+        rc = run([
+            "email",
+            "--config", str(CFG),
+            "--attach-template", str(bad),
             "--dryrun"
         ])
         assert rc == 2
@@ -332,19 +378,83 @@ def test_email_param_url_cli_override(capsys):
 
 # combined cli param unit tests (not exhaustive combos)
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_attach_template_params_cli_override():
-    pass
+def test_email_combo_attach_template_and_params_cli_override(tmpdir, capsys):
+    """
+    Test overriding attach_template and attach_params together
+    """
+    custom = tmpdir / "tmpl.jinja"
+    custom.write_text("TEST:{{ dtg_start }}", encoding="utf-8")
+    params = {
+        "filename":"test",
+        "dtg_start":"19700101T000000Z",
+        "dtg_created":"19700101T000000Z",
+        "dtg_end":"19700101T000000Z",
+        "description":"test",
+        "event_uid":"test",
+        "organizer_email":"randy@test",
+        "organizer_name":"Mandy Rarsh",
+        "summary":"test"
+    }
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--attach-template", str(custom),
+        "--attach-params", json.dumps(params),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "20250806T073059Z" not in out
+    assert "19700101T000000Z" in out
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_attachment_with_attach_template():
-    pass
+def test_email_param_attachment_with_attach_template(tmpdir, capsys):
+    """
+    Test to ensure --attachment takes priority over --attach-template
+    """
+    attach = PKG_TEMPLATES / "file.txt"
+    attach_tmpl = PKG_TEMPLATES / "icalendar.jinja"
+    rc = run([
+        "email",
+        "--config", str(MIN_ATTACH_CFG),
+        "--attachment", str(attach),
+        "--attach-template", str(attach_tmpl),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "testfile" == out
 
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_email_param_attachment_with_attach_params():
-    pass
+def test_email_param_attachment_with_attach_params(capsys):
+    """
+    Test to ensure --attach-params does not jeopardize --attachment priority
+    """
+    params = {
+        "filename":"test",
+        "dtg_start":"19700101T000000Z",
+        "dtg_created":"19700101T000000Z",
+        "dtg_end":"19700101T000000Z",
+        "description":"test",
+        "event_uid":"test",
+        "organizer_email":"randy@test",
+        "organizer_name":"Mandy Rarsh",
+        "summary":"test"
+    }
+    attach = PKG_TEMPLATES / "file.txt"
+    rc = run([
+        "email",
+        "--config", str(CFG),
+        "--attachment", str(attach),
+        "--attach-params", json.dumps(params),
+        "--output-attach", "-",
+        "--dryrun"
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out.strip()
+    assert "testfile" == out
 
-def test_email_param_url_with_template_cli_override(tmpdir):
+def test_email_combo_url_and_template_cli_override(tmpdir):
     custom = tmpdir / "tmpl.jinja"
     custom.write_text("X-TEST {{ url }} {{ sender.name }}", encoding="utf-8")
     out_html = tmpdir / "out.html"
@@ -353,17 +463,12 @@ def test_email_param_url_with_template_cli_override(tmpdir):
         "--config", str(CFG),
         "--template", str(custom),
         "--output-body", str(out_html),
+        "--url", "http://newcallback",
         "--dryrun"
     ])
     assert rc == 0
     assert out_html.exists()
     s = out_html.read_text(encoding="utf-8")
-    assert "X-TEST http://callback" in s
-
-# template
-
-@pytest.mark.xfail(reason="Not yet implemented")
-def test_():
-    pass
+    assert "X-TEST http://newcallback" in s
 
 ### END email cmd unit tests
