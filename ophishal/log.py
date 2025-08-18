@@ -39,7 +39,13 @@ def create_logger(title:str) -> Formatter:
     # https://docs.python.org/3/library/logging.html#logger-objects
     logger = logging.getLogger(title)
     logger.setLevel(LOG_LEVEL)
-    handler = logging.StreamHandler()
-    handler.setFormatter(Formatter(f'[{title}] %(message)s'))
-    logger.addHandler(handler)
+    if len(logger.handlers) == 0:
+        # if no handlers, this is the first instatiation of the logger
+        # and we need to create a logger
+        handler = logging.StreamHandler()
+        handler.setFormatter(Formatter(f'[{title}] %(message)s'))
+        logger.addHandler(handler)
     return logger
+
+def destroyLogger(title:str):
+    passz
