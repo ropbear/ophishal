@@ -44,14 +44,14 @@ def test_help_rc():
 def test_help_flag(capsys):
     with pytest.raises(SystemExit):
         cli.build_parser().parse_args(["-h"])
-    out = capsys.readouterr().out + capsys.readouterr().err
-    assert all([x in out for x in ["usage:", "positional arguments:", "options:"]])
+    cap = capsys.readouterr()
+    assert all([x in cap.out for x in ["usage:", "positional arguments:", "options:"]])
 
 def test_help_full_arg(capsys):
     with pytest.raises(SystemExit):
         cli.build_parser().parse_args(["--help"])
-    out = capsys.readouterr().out + capsys.readouterr().err
-    assert all([x in out for x in ["usage:", "positional arguments:", "options:"]])
+    cap = capsys.readouterr()
+    assert all([x in cap.out for x in ["usage:", "positional arguments:", "options:"]])
 
 def test_version_rc():
     rc = run(["--version"])
@@ -59,14 +59,14 @@ def test_version_rc():
 
 def test_version_full_arg(capsys):
     run(["--version"])
-    out = capsys.readouterr().out.strip()
     ver = toml.load(PYPROJECT)['project']['version']
-    assert f"ophishal v{ver}" == out
+    cap = capsys.readouterr()
+    assert f"ophishal v{ver}" == cap.out.strip()
 
 def test_version_flag_is_not_verbose_flag(capsys):
     rc = run(["-v"])
-    out = capsys.readouterr().out.strip()
-    assert rc == 1 and all([x in out for x in ["usage:", "positional arguments:", "options:"]])
+    cap = capsys.readouterr()
+    assert rc == 1 and all([x in cap.out for x in ["usage:", "positional arguments:", "options:"]])
 
 def test_unknown_cmd_behavior():
     with pytest.raises(SystemExit):
@@ -106,8 +106,8 @@ def test_email_no_params_default_output(capsys):
         rc = run([
                 "email"
         ])
-        err = capsys.readouterr().err.strip()
-        assert 'the following arguments are required:' in err
+        cap = capsys.readouterr()
+        assert 'the following arguments are required:' in cap.err
 
 def test_email_basic_params_default_output(capsys):
     rc = run([
@@ -115,8 +115,8 @@ def test_email_basic_params_default_output(capsys):
             "--config", str(CFG),
             "--dryrun",
     ])
-    out = capsys.readouterr().out.strip()
-    assert out == ''
+    cap = capsys.readouterr()
+    assert '' == cap.out.strip()
 
 def test_email_bad_params_default_output(capsys):
     with pytest.raises(SystemExit):
@@ -125,8 +125,8 @@ def test_email_bad_params_default_output(capsys):
                 "--config", str(CFG),
                 "--thiscommanddoesnotexistnorwilliteverbecausewhowouldnamesomethinglikethisunlesstheyaretrollingme"
         ])
-        err = capsys.readouterr().err.strip()
-        assert 'unrecognized arguments:' in err
+        cap = capsys.readouterr()
+        assert 'unrecognized arguments:' in cap.err
 
 def test_email_basic_params_log_level_verbose_flag(caplog):
     rc = run([
@@ -160,8 +160,8 @@ def test_email_param_outupt_body_to_stdout(capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "<p>Randy Marsh</p>" in out
+    cap = capsys.readouterr()
+    assert "<p>Randy Marsh</p>" in cap.out
 
 def test_email_param_output_attach_to_stdout(capsys):
     rc = run([
@@ -171,10 +171,10 @@ def test_email_param_output_attach_to_stdout(capsys):
         "--dryrun",
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "BEGIN:VCALENDAR" in out
-    assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in out
-    assert "ORGANIZER;CN=Randy Marsh" in out
+    cap = capsys.readouterr()
+    assert "BEGIN:VCALENDAR" in cap.out
+    assert "SUMMARY:Action Required: Q3 Financials Access Expiration" in cap.out
+    assert "ORGANIZER;CN=Randy Marsh" in cap.out
 
 def test_email_attachment_passthru_to_stdout(tmpdir, capsys):
     src = tmpdir / "file.txt"
@@ -293,9 +293,9 @@ def test_email_param_template_cli_override(tmpdir, capsys):
         "--output-body", "-",
         "--dryrun"
     ])
-    out = capsys.readouterr().out.strip()
-    assert "X-TEST" in out
-    assert "Microsoft Teams meeting" not in out
+    cap = capsys.readouterr()
+    assert "X-TEST" in cap.out
+    assert "Microsoft Teams meeting" not in cap.out
 
 def test_email_param_attachment_cli_override(tmpdir, capsys):
     custom = tmpdir / "newfile.txt"
@@ -308,9 +308,9 @@ def test_email_param_attachment_cli_override(tmpdir, capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "abc123" in out
-    assert "testfile" not in out
+    cap = capsys.readouterr()
+    assert "abc123" in cap.out
+    assert "testfile" not in cap.out
 
 def test_email_param_attach_template_cli_override(tmpdir, capsys):
     custom = tmpdir / "tmpl.jinja"
@@ -323,9 +323,9 @@ def test_email_param_attach_template_cli_override(tmpdir, capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "TEST:20250806T073059Z" in out
-    assert "DTSTART;TZID=UTC:" not in out
+    cap = capsys.readouterr()
+    assert "TEST:20250806T073059Z" in cap.out
+    assert "DTSTART;TZID=UTC:" not in cap.out
 
 def test_email_param_attach_params_cli_override(capsys):
     params = {
@@ -347,9 +347,9 @@ def test_email_param_attach_params_cli_override(capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "20250806T073059Z" not in out
-    assert "19700101T000000Z" in out
+    cap = capsys.readouterr()
+    assert "20250806T073059Z" not in cap.out
+    assert "19700101T000000Z" in cap.out
 
 def test_email_param_server_cli_override(caplog):
     rc = run([
@@ -404,9 +404,9 @@ def test_email_combo_attach_template_and_params_cli_override(tmpdir, capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "20250806T073059Z" not in out
-    assert "19700101T000000Z" in out
+    cap = capsys.readouterr()
+    assert "20250806T073059Z" not in cap.out
+    assert "19700101T000000Z" in cap.out
 
 def test_email_param_attachment_with_attach_template(tmpdir, capsys):
     """
@@ -423,8 +423,8 @@ def test_email_param_attachment_with_attach_template(tmpdir, capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "testfile" == out
+    cap = capsys.readouterr()
+    assert "testfile" == cap.out.strip()
 
 def test_email_param_attachment_with_attach_params(capsys):
     """
@@ -451,8 +451,8 @@ def test_email_param_attachment_with_attach_params(capsys):
         "--dryrun"
     ])
     assert rc == 0
-    out = capsys.readouterr().out.strip()
-    assert "testfile" == out
+    cap = capsys.readouterr()
+    assert "testfile" == cap.out.strip()
 
 def test_email_combo_url_and_template_cli_override(tmpdir):
     custom = tmpdir / "tmpl.jinja"
