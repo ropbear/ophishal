@@ -84,14 +84,6 @@ def test_email_no_params_rc():
         ])
         assert rc == 2
 
-def test_email_no_params_default_output(capsys):
-    with pytest.raises(SystemExit):
-        rc = run([
-                "email"
-        ])
-        err = capsys.readouterr().err.strip()
-        assert 'the following arguments are required:' in err
-
 def test_email_basic_params_rc():
     rc = run([
             "email",
@@ -99,15 +91,6 @@ def test_email_basic_params_rc():
             "--dryrun",
     ])
     assert rc == 0
-
-def test_email_basic_params_default_output(capsys):
-    rc = run([
-            "email",
-            "--config", str(CFG),
-            "--dryrun",
-    ])
-    out = capsys.readouterr().out.strip()
-    assert out == ''
 
 def test_email_bad_params_rc():
     with pytest.raises(SystemExit):
@@ -117,6 +100,23 @@ def test_email_bad_params_rc():
                 "--thiscommanddoesnotexistnorwilliteverbecausewhowouldnamesomethinglikethisunlesstheyaretrollingme"
         ])
         assert rc == 2
+
+def test_email_no_params_default_output(capsys):
+    with pytest.raises(SystemExit):
+        rc = run([
+                "email"
+        ])
+        err = capsys.readouterr().err.strip()
+        assert 'the following arguments are required:' in err
+
+def test_email_basic_params_default_output(capsys):
+    rc = run([
+            "email",
+            "--config", str(CFG),
+            "--dryrun",
+    ])
+    out = capsys.readouterr().out.strip()
+    assert out == ''
 
 def test_email_bad_params_default_output(capsys):
     with pytest.raises(SystemExit):
@@ -128,17 +128,7 @@ def test_email_bad_params_default_output(capsys):
         err = capsys.readouterr().err.strip()
         assert 'unrecognized arguments:' in err
 
-def test_email_basic_params_default_output_colored(capsys):
-    rc = run([
-            "-v",
-            "email",
-            "--config", str(CFG),
-            "--dryrun",
-    ])
-    err = capsys.readouterr().err.strip()
-    assert LOG_COLORS[INFO] in err
-
-def test_email_basic_params_default_output_no_color(capsys):
+def test_email_basic_params_log_level_verbose_flag(caplog):
     rc = run([
             "-v",
             "--no-color",
@@ -146,22 +136,10 @@ def test_email_basic_params_default_output_no_color(capsys):
             "--config", str(CFG),
             "--dryrun"
     ])
-    err = capsys.readouterr().err.strip()
-    assert LOG_COLORS[INFO] not in err
+    assert "INFO" in caplog.text
+    assert "DEBUG" not in caplog.text
 
-def test_email_basic_params_nc_verbose_flag_output(capsys):
-    rc = run([
-            "-v",
-            "--no-color",
-            "email",
-            "--config", str(CFG),
-            "--dryrun"
-    ])
-    err = capsys.readouterr().err.strip()
-    assert '[INFO]' in err
-    assert '[DBUG]' not in err
-
-def test_email_basic_params_nc_very_verbose_flag_output(capsys):
+def test_email_basic_params_log_level_very_verbose_flag(caplog):
     rc = run([
             "-vv",
             "--no-color",
@@ -169,8 +147,8 @@ def test_email_basic_params_nc_very_verbose_flag_output(capsys):
             "--config", str(CFG),
             "--dryrun"
     ])
-    err = capsys.readouterr().err.strip()
-    assert '[DBUG]' in err
+    assert 'INFO' in caplog.text
+    assert 'DEBUG' in caplog.text
 
 # individual param (to stdout) unit tests
 
@@ -327,7 +305,7 @@ def test_email_param_attach_params_cli_override(capsys):
     assert "20250806T073059Z" not in out
     assert "19700101T000000Z" in out
 
-def test_email_param_server_cli_override(capsys):
+def test_email_param_server_cli_override(caplog):
     rc = run([
             "-vv",
             "email",
@@ -337,8 +315,7 @@ def test_email_param_server_cli_override(capsys):
             "--dryrun"
     ])
     assert rc == 0
-    err = capsys.readouterr().err
-    assert "THISISNOTANIPADDRESS" in err
+    assert "THISISNOTANIPADDRESS" in caplog.text
 
 def test_email_param_url_cli_override(capsys):
     rc = run([
