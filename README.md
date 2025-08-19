@@ -13,9 +13,10 @@ This project was completed during study for OSEP. It's intent is to provide a si
 
 ## roadmap
 
-- 
-- Config file documentation
-- Smishing
+1. Pretext GenAI startpoint
+2. Config file documentation
+3. Smishing
+4. Context GenAI startpoint
 
 ## installation
 
