@@ -1,5 +1,5 @@
 {
-  "campaign": "simple-example",
+  "campaign": "minimal-config",
 
   "company": {
     "uid": "company"
@@ -16,8 +16,8 @@
   "employees": [
     {
       "uid": "jdoe",
-      "email": "jdoe@localhost",
-      "name":"John Doe"
+      "name":"John Doe",
+      "email":"jdoe@localhost"
     }
   ],
 
@@ -28,7 +28,7 @@
     "subject": "HR Meeting",
     "template":"msft-teams.jinja",
     "server":"127.0.0.1",
-    "url":"http://192.168.45.241",
+    "url":"http://callback",
     "attach_template":"icalendar.jinja",
     "attach_params":{
       "filename":"invite",

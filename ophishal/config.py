@@ -71,8 +71,8 @@ class BaseConfig:
             e["uid"]: Employee(
                 uid=e["uid"],
                 name=e["name"],
-                username=e["username"] if "username" in e else "",
                 department=self.departments[e["department_uid"]] if "department_uid" in e else None,
+                username=e.get("username"),
                 email=e.get("email"),
                 phone=e.get("phone"),
                 reports_to=None

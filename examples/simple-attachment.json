@@ -28,7 +28,7 @@
     "subject": "HR Meeting",
     "template":"msft-teams.jinja",
     "server":"127.0.0.1",
-    "url":"http://192.168.45.241",
+    "url":"http://callback",
     "attachment":"file.txt"
   }
 }

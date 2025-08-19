@@ -19,8 +19,8 @@ class Department:
 class Employee:
     uid: str
     name: str
-    username: str
     department: Department
+    username: Optional[str]
     email: Optional[str]
     phone: Optional[str]
     reports_to: Optional["Employee"]

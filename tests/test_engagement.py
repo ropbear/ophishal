@@ -30,7 +30,7 @@ from ophishal.model import Employee, Department, Company
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR =  ROOT / "templates"
 CFG = ROOT / "examples" / "config.json"
-MIN_CFG = ROOT / "examples" / "simple.json"
+MIN_CFG = ROOT / "examples" / "minimum.json"
 
 
 @pytest.fixture
@@ -39,13 +39,27 @@ def engagement_config():
         return json.load(f)
 
 @pytest.fixture
+def engagement_min_config():
+    with open(MIN_CFG, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+@pytest.fixture
 def eng_obj(engagement_config):
     return EmailEngagement(config=engagement_config)
+
+@pytest.fixture
+def min_eng_obj(engagement_min_config):
+    return EmailEngagement(config=engagement_min_config)
 
 @pytest.fixture
 def eng_built(eng_obj):
     eng_obj.build()
     return eng_obj
+
+@pytest.fixture
+def min_eng_built(min_eng_obj):
+    min_eng_obj.build()
+    return min_eng_obj
 
 ### START core unit tests
 
@@ -257,5 +271,122 @@ def test_attachment_fields(eng_built):
 ### END examples/config.json unit tests
 
 ### START examples/simple.json unit tests
+
+def test_object_creation_from_config(min_eng_obj):
+    eng = min_eng_obj
+    assert isinstance(eng, EmailEngagement)
+
+# campaign unit tests
+
+def test_campaign(min_eng_obj):
+    assert min_eng_obj.campaign == "minimal-config"
+
+# company unit tests
+
+def test_company_object(min_eng_obj):
+    assert isinstance(min_eng_obj.company, Company)
+
+def test_company_correct_uid(min_eng_obj):
+    assert min_eng_obj.company.uid == "company"
+
+# department unit tests
+
+def test_department_object(min_eng_obj):
+    assert isinstance(min_eng_obj.departments["hr"], Department)
+
+def test_department_object_correct_uid(min_eng_obj):
+    assert min_eng_obj.departments["hr"].uid == "hr"
+
+def test_department_company_object(min_eng_obj):
+    assert isinstance(min_eng_obj.departments["hr"].company, Company)
+
+def test_department_correct_company_uid(min_eng_obj):
+    assert min_eng_obj.departments["hr"].company.uid == "company"
+
+def test_department_head_object(min_eng_obj):
+    assert min_eng_obj.departments["hr"].head is None
+
+def test_department_email(min_eng_obj):
+    assert min_eng_obj.departments["hr"].email == "hr@localhost"
+
+def test_department_name(min_eng_obj):
+    assert min_eng_obj.departments["hr"].name == "Human Resources"
+
+# employee unit tests
+
+def test_employee_objects(min_eng_obj):
+    assert all([isinstance(e, Employee) for e in min_eng_obj.employees.values()])
+
+def test_employee_uid(min_eng_obj):
+    emp = min_eng_obj.employees["jdoe"]
+    assert emp.uid == "jdoe"
+
+def test_employee_name(min_eng_obj):
+    emp = min_eng_obj.employees["jdoe"]
+    assert emp.name == "John Doe"
+
+def test_employee_no_username(min_eng_obj):
+    emp = min_eng_obj.employees["jdoe"]
+    assert emp.username is None
+
+def test_employee_no_dept(min_eng_obj):
+    emp = min_eng_obj.employees["jdoe"]
+    assert emp.department is None
+
+def test_employee_email(min_eng_obj):
+    emp = min_eng_obj.employees["jdoe"]
+    assert emp.email == "jdoe@localhost"
+
+def test_employee_no_reports_to(min_eng_obj):
+    emp = min_eng_obj.employees["jdoe"]
+    assert emp.reports_to is None    
+
+# sender unit tests
+
+def test_sender_object(min_eng_obj):
+    assert isinstance(min_eng_obj.sender, Department)
+
+def test_sender_uid(min_eng_obj):
+    assert min_eng_obj.sender.uid == "hr"
+
+# target unit tests
+
+def test_targets(min_eng_obj):
+    assert any(isinstance(t, Employee) and t.uid == "jdoe" for t in min_eng_obj.targets)
+
+# subject unit tests
+
+def test_subject(min_eng_obj):
+    assert min_eng_obj.subject == "HR Meeting"
+
+# email body unit tests
+
+def test_body_contains_expected_text(min_eng_built):
+    assert "<title>HR Meeting</title>" in min_eng_built.body
+
+# template unit tests
+
+def test_template_exists(min_eng_obj):
+    assert min_eng_obj.template.exists()
+
+def test_template_path(min_eng_obj):
+    assert min_eng_obj.template.name == "msft-teams.jinja"
+
+# server unit tests
+
+def test_server(min_eng_obj):
+    assert min_eng_obj.server == "127.0.0.1"
+
+# url unit tests
+
+def test_url(min_eng_obj):
+    assert min_eng_obj.url == "http://callback"
+
+# attachment unit tests
+
+def test_attachment_fields(min_eng_built):
+    a = min_eng_built.attachment
+    assert b"a0jlWx" in a
+    assert b"20250814T073059Z" in a
 
 ### END examples/simple.json unit tests
