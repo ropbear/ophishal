@@ -13,7 +13,7 @@ from email.utils import formatdate
 from email.utils import formataddr
 
 from ophishal.log import create_logger
-from ophishal.engagement import Engagement
+from ophishal.engagement import EmailEngagement
 
 def get_mime_details(attachment: bytes) -> dict:
     logger = create_logger("get_mime_details")
@@ -39,7 +39,7 @@ def get_mime_details(attachment: bytes) -> dict:
     }
 
 
-def send_email(eng: Engagement):
+def send_email(eng: EmailEngagement):
     logger = create_logger("send_email")
 
     # create email headers

@@ -47,7 +47,7 @@ def _render_template(template: Path, params: dict) -> str:
         return None
 
 
-class Engagement(BaseConfig):
+class EmailEngagement(BaseConfig):
     require = {
         "campaign": str,
         "company": dict,
@@ -55,36 +55,38 @@ class Engagement(BaseConfig):
         "employees": list,
         "sender": str,
         "targets": list,
-        "subject": str
+        "email": dict
     }
 
     def _parse(self, config: dict):
-        logger = create_logger("Engagement:parse")
+        logger = create_logger("EmailEngagement:parse")
+        email_cfg = config["email"]
+
         # required
-        self.subject = config["subject"]
+        self.subject = email_cfg["subject"]
 
         # optional, can also be specified via command line which will override these values
-        if "template" in config:
-            self.template = _resolve_template_path(config["template"])
+        if "template" in email_cfg:
+            self.template = _resolve_template_path(email_cfg["template"])
             logger.debug("Added template from configuration file")
-        if "url" in config:
-            self.url = config["url"]
+        if "url" in email_cfg:
+            self.url = email_cfg["url"]
             logger.debug("Added url from configuration file")
-        if "attach_template" in config:
-            self.attach_template = _resolve_template_path(config["attach_template"])
+        if "attach_template" in email_cfg:
+            self.attach_template = _resolve_template_path(email_cfg["attach_template"])
             logger.debug("Added attachment template from configuration file")
-        if "attach_params" in config:
-            self.attach_params = config["attach_params"]
+        if "attach_params" in email_cfg:
+            self.attach_params = email_cfg["attach_params"]
             logger.debug("Added attachment template parameters from configuration file")
-        if "attachment_file" in config:
-            self.attachment = _resolve_template_path(config["attachment_file"]).read_bytes()
+        if "attachment_file" in email_cfg:
+            self.attachment = _resolve_template_path(email_cfg["attachment_file"]).read_bytes()
             logger.debug("Added attachment file from configuration file")
-        if "server" in config:
-            self.server = config["server"]
+        if "server" in email_cfg:
+            self.server = email_cfg["server"]
             logger.debug("Added server from configuration file")
 
     def handle_attr(self, attr:str, val, required:bool = False):
-        logger = create_logger("Engagement:handle_attr")
+        logger = create_logger("EmailEngagement:handle_attr")
         if val is not None:
             if hasattr(self, attr):
                 logger.warning(
@@ -116,11 +118,11 @@ class Engagement(BaseConfig):
         url: str | None = None
     ):
         """
-        Sets the Engagement object html and attachment attributes using
+        Sets the EmailEngagement object html and attachment attributes using
         either the configuration file or the provided CLI arguments,
         or a combination of both.
         """
-        logger = create_logger("Engagement:build")
+        logger = create_logger("EmailEngagement:build")
 
         tmpl_path = _resolve_template_path(template) if template is not None else None
         self.handle_attr("template", tmpl_path, required=True)

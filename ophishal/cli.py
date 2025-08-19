@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from logging import DEBUG, INFO
 from importlib.metadata import version, PackageNotFoundError
-from ophishal.engagement import Engagement
+from ophishal.engagement import EmailEngagement
 from ophishal.log import create_logger, setLogLevel, setLogColor
 from ophishal.email import send_email
 
@@ -37,14 +37,14 @@ def output_data(content: str | bytes, path: str | None):
 
 def cmd_email(args) -> int:
     logger = create_logger("command:email")
-    eng = Engagement(filepath=Path(args.config))
+    eng = EmailEngagement(filepath=Path(args.config))
 
     if eng is None:
-        logger.critical("Failed to create Engagement object")
+        logger.critical("Failed to create EmailEngagement object")
         return 1
 
-    logger.debug("Calling Enagement.build()")
-    # parsing of individual arguments handled in Engagement.build()
+    logger.debug("Calling EmailEnagement.build()")
+    # parsing of individual arguments handled in EmailEngagement.build()
     eng.build(
         template=args.template,
         url=args.url,
@@ -53,7 +53,7 @@ def cmd_email(args) -> int:
         attach_params=args.attach_params,
         server=args.server
     )
-    logger.debug("Engagement.build() complete")
+    logger.debug("EmailEngagement.build() complete")
 
     if args.attach_template is not None and eng.attachment is None:
         logger.warning("No attachment generated from template")

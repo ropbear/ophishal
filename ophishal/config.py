@@ -92,9 +92,8 @@ class BaseConfig:
         # support sender as department or employee
         self.sender = resolve_uid(config["sender"], self)
         self.targets = [resolve_uid(uid, self) for uid in config["targets"]]
-        self.culture = config["culture"] if "culture" in config else None
-        self.tech = config["tech"] if "tech" in config else None
-        self.current_events = config["current_events"] if "current_events" in config else None
+        self.context = config["context"] if "context" in config else None
+        self.pretext = config["pretext"] if "pretext" in config else None
 
     def _parse(self, config:dict):
         """
