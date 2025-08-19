@@ -97,6 +97,18 @@ flowchart TD
     style EmailEngagement fill:#fff,stroke:#e0e0e0,stroke-width:2px,rx:15,ry:15
     style AttachmentTemplate fill:#f9d4ff,stroke:#e0e0e0,stroke-width:2px,rx:15,ry:15
     style SendEmail fill:#f9d4ff,stroke:#e0e0e0,stroke-width:2px,rx:15,ry:15
+
+    %% Add CSS to adapt well to both modes
+    %% Custom CSS for dark mode
+    %%{init: {'themeVariables': {
+        'primaryColor': '#e5e5e5',
+        'secondaryColor': '#333333',
+        'tertiaryColor': '#7a7a7a',
+        'nodeBorder': '2px solid #444444',
+        'nodeBorderRadius': '15px',
+        'primaryTextColor': '#ffffff', 
+        'linkStyle': 'stroke-width:2px; stroke: #aaa; fill: transparent;'
+    }}}%%
 ```
 
 ## automatic attachment detection
