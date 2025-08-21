@@ -1,0 +1,114 @@
+{
+  "campaign": "sptg-q3-finance-credential-harvest",
+
+  "company": {
+    "uid": "sptg",
+    "official_name": "South Park Technology Group",
+    "common_names": ["South Park Tech", "SPTG"],
+    "abbreviations": ["SPTG"],
+    "net_worth": "1.3B USD",
+    "number_of_employees": 134,
+    "type": "Private",
+    "industry": "Media"
+  },
+
+  "departments": [
+    {
+      "uid": "eng",
+      "name": "Engineering",
+      "company_uid": "sptg",
+      "email":"engineering@localhost",
+      "head_uid": "emp_randy"
+    }
+  ],
+
+  "employees": [
+    {
+      "uid": "emp_randy",
+      "name": "Randy Marsh",
+      "nickname": "Randy",
+      "username": "rmarsh",
+      "department_uid": "eng",
+      "work_title": "Director of Engineering",
+      "signature_block": "Randy Marsh | Director of Engineering",
+      "email": "randy@localhost",
+      "phone": "(303) 555-1001",
+      "location": "South Park, CO",
+      "reports_to": null,
+      "writing_sample": [
+        "I’m not chugging beer! I’m sampling a flight of gluten-free German lagers with a French wine pairing! It’s called a smorgaswein and it’s elegantly cultural!",
+        "Just gonna get a little bit of cancer, Stan. Tell Mom it’s okay."
+      ]
+    },
+    {
+      "uid": "emp_stan",
+      "name": "Stan Marsh",
+      "nickname": "Stan",
+      "username": "smarsh",
+      "department_uid": "eng",
+      "work_title": "Software Engineer I",
+      "signature_block": "Stan Marsh | Software Engineer I",
+      "email": null,
+      "phone": null,
+      "location": "South Park, CO",
+      "reports_to": "emp_randy",
+      "writing_sample":[
+        "Dad, you like to drink. So have a drink once in a while. Have two. If you devote your whole life to completely avoiding something you like, then that thing still controls your life and you've never learned any discipline at all.",
+        "Why’d you have to rub your cl*t on stage, dad?"
+      ]
+    }
+  ],
+
+  "sender": "emp_randy",
+  "targets": ["emp_stan"],
+
+  "context":{
+    "culture": {
+      "city":"South Park",
+      "province":"Colorado",
+      "country_code":"US"
+    },
+    "tech": [
+      "Google Workspace",
+      "Slack",
+      "Zoom",
+      "AWS",
+      "Okta",
+      "Jira",
+      "CrowdStrike",
+      "GitHub Enterprise"
+    ],
+    "current_events": [
+      "Preparing for launch of 'SP MetaVerse' VR platform",
+      "Internal phishing test scheduled next week",
+      "Recent outage in South Park data center",
+      "Hiring freeze announced in non-engineering departments"
+    ]
+  },
+
+  "pretext":{
+    "medium":"email",
+    "pretext":"Download a docx and enable macros to view a graphic.",
+    "desired_action": "download docx and enable macros",
+    "constraints": [""]
+  },
+
+  "email":{
+    "subject": "Action Required: Q3 Financials Access Expiration",
+    "template":"msft-teams.jinja",
+    "server":"192.168.1.25",
+    "url":"http://callback",
+    "attach_template":"icalendar.jinja",
+    "attach_params":{
+      "filename":"invite",
+      "dtg_start":"20250806T073059Z",
+      "dtg_created":"20250805T073059Z",
+      "dtg_end":"20250806T083059Z",
+      "description":"A meeting for HR sync",
+      "event_uid":"ABCDEF",
+      "organizer_email":"randy@localhost",
+      "organizer_name":"Randy Marsh",
+      "summary":"Action Required: Q3 Financials Access Expiration"
+    }
+  }
+}

@@ -1,0 +1,104 @@
+# ophishal/common/config.py
+import json
+from pathlib import Path
+from ophishal.util import resolve_uid
+from ophishal.model import Company, Department, Employee, Target
+from ophishal.log import create_logger
+
+class BaseConfig:
+    require = {}
+    def __init__(self, config:dict=None, filepath:Path=None):
+        if filepath is not None and config is not None:
+            raise ValueError("Can't have both config and filepath")
+
+        if filepath is not None and isinstance(filepath, Path):
+            if filepath.exists():
+                config = self.__from_file(filepath)
+            else:
+                raise FileNotFoundError("Configuration file does not exist")
+        
+        if config is not None and isinstance(config, dict):
+            for key in self.require.keys():
+                if key not in config.keys():
+                    raise AttributeError(
+                        "Configuration missing keys: " + \
+                        f"{list(set(self.require.keys()) - set(config.keys()))}"
+                    )
+                elif not isinstance(config[key], self.require[key]):
+                    raise TypeError(
+                        f"Key '{key}' should be  of type {self.require[key]}" + \
+                        f", got {type(config[key])}"
+                    )
+        else:
+            raise ValueError("No valid configuration parameter specified")
+
+        self.__common(config)
+        self._parse(config)
+
+    def __from_file(self, filepath:Path) -> dict:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    
+    def __common(self, config:dict):
+        """
+        These configuration attributes are going to be common across all
+        proponents of the program.
+        """
+        logger = create_logger("BaseConfig:common")
+
+        self.campaign = config["campaign"]
+        logger.info('Parsing campaign "%s"', self.campaign)
+
+        c = config["company"]
+        self.company = Company(
+            uid=c["uid"]
+        )
+        logger.debug("Added company with uid: %s", self.company.uid)
+
+        self.departments = {
+            d["uid"]: Department(
+                uid=d["uid"],
+                name=d.get("name"),
+                company=self.company,
+                head=None,
+                email=d.get("email")
+            )
+            for d in config["departments"]
+        }
+        logger.debug("Added %d departments", len(self.departments))
+
+        self.employees = {
+            e["uid"]: Employee(
+                uid=e["uid"],
+                name=e["name"],
+                department=self.departments[e["department_uid"]] if "department_uid" in e else None,
+                username=e.get("username"),
+                email=e.get("email"),
+                phone=e.get("phone"),
+                reports_to=None,
+                writing_sample=e.get("writing_sample")
+            )
+            for e in config["employees"]
+        }
+        logger.debug("Added %d employees", len(self.employees))
+
+        for dept in config["departments"]:
+            if dept.get("head_uid"):
+                self.departments[dept["uid"]].head = self.employees[dept["head_uid"]]
+
+        for e in config["employees"]:
+            if e.get("reports_to"):
+                self.employees[e["uid"]].reports_to = self.employees[e["reports_to"]]
+
+        # support sender as department or employee
+        self.sender = resolve_uid(config["sender"], self)
+        self.targets = [resolve_uid(uid, self) for uid in config["targets"]]
+        self.context = config["context"] if "context" in config else None
+        self.pretext = config["pretext"] if "pretext" in config else None
+
+    def _parse(self, config:dict):
+        """
+        Classes which inherit this base class will use this function to
+        parse out the details they need from the dictionary.
+        """
+        pass
