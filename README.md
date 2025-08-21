@@ -4,21 +4,23 @@ This project is intended for penetration tests and lab environments. Any other u
 
 This project was completed during study for OSEP. It's intent is to provide a simple way to generate potent phishing emails leveraging generative AI. It doubles as an exercise in using GenAI both during development (scaffolding, test case generation, example generation) and for operational use cases. Read more about my experience with using OpenAI's project feature for development with GPT-4o and GPT-5 [below](#footnote-using-genai).
 
-## features
+## Features
 
 - Single configuration file
 - Flexible use of GenAI, but not reliant upon it
 - Templating for both email body and attachment using Jinja2
-- Automatic MIMEType and file extension detection for attachment
+- Automatic MIMEType and file extension detection for attachment with `python-magic` and `mimetypes`
 - CLI always overrides configuration file for on the fly changes
 
-## roadmap
+## Roadmap
+
+Development is paused for the moment, but here are some things that should probably be done in the future.
 
 1. Config file documentation
 2. Smishing
 3. GenAI creating attachments
 
-## installation
+## Installation
 
 This project relies on the [Poetry build system](https://python-poetry.org/docs/).
 
@@ -37,19 +39,19 @@ python3 -m pip install ./ophishal-0.1.0-py3-none-any.whl
 python3 -m ophishal -h
 ```
 
-## development
+## Development
 
 ```bash
 poetry run ophishal -h
 ```
 
-## testing
+## Testing
 
 ```bash
 poetry run pytest
 ```
 
-## design
+## Design
 
 ```mermaid
 flowchart TD
@@ -78,11 +80,7 @@ flowchart TD
     EmailEngagement -- send_email() --> SendEmail
 ```
 
-## automatic attachment detection
-
-This project uses `python-magic` and `mimetypes` to automatically determine the correct MIMEType and file extension for the attachment.
-
-# example
+# Example
 
 Given the following `config.json`...
 
@@ -213,8 +211,9 @@ $ poetry run ophishal email --config /tmp/config.json --generate-body --url http
 
 Note that the CLI `--url` parameter was used instead of the configuration.
 
-# footnote: using GenAI
+# Using GenAI
 
 1. Every generated line should be reviewed prior to a commit.
 2. Write your own test cases. Using GenAI for scaffolding or text generation is great, but a real person needs to write or atomically review the test cases to make sure the project has good coverage. Additionally, I'm not saying it wasn't important before, but in using GenAI it is even more critical to maximize coverage to ensure everything is working as expected.
 3. The OpenAI APIs change frequently, so make sure you specify which version you are using when prompting about the `openai` library.
+4. Overall, the experience wasn't great. I ended up abandoning GPT-5 (which, released during development, seemed noticably worse than GPT-4o) and writing almost everything by hand. The model struggled to maintain context and would often generate content that was not consistent with style, sytanx, or the overall design. That being said, it was great for example config generation and also did a pretty solid job with the actual email body generation.
