@@ -21,16 +21,31 @@ This project was completed during study for OSEP. It's intent is to provide a si
 
 This project relies on the [Poetry build system](https://python-poetry.org/docs/).
 
+In the source directory:
+
 ```bash
-poetry install
-poetry env activate
+poetry build
+```
+
+In a python venv:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install ./ophishal-0.1.0-py3-none-any.whl
+python3 -m ophishal -h
 ```
 
 ## development
 
 ```bash
-poetry run pytest
 poetry run ophishal -h
+```
+
+## testing
+
+```bash
+poetry run pytest
 ```
 
 ## design

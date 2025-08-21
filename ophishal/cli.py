@@ -59,7 +59,7 @@ def cmd_email(args) -> int:
 
     if args.generate_body:
         data = generate_email_body_and_subject(Path(args.config))
-        eng.body = data["body"]
+        eng.body = data["body"] if data is not None else None
 
     if args.attach_template is not None and eng.attachment is None:
         logger.warning("No attachment generated from template")
