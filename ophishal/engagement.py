@@ -53,7 +53,7 @@ class EmailEngagement(BaseConfig):
         "company": dict,
         "departments": list,
         "employees": list,
-        "sender": str,
+        "sender": object,
         "targets": list,
         "email": dict
     }
@@ -159,9 +159,27 @@ class EmailEngagement(BaseConfig):
             "subject": self.subject if hasattr(self, "subject") else "",
             "url": self.url
         }
-        if template is not None:
+        if self.template is not None:
             self.body = _render_template(self.template, template_params)
             logger.debug("Created HTML body from template %s", self.template)
         else:
             self.body = None
             logger.warning("No template specified, body left empty")
+
+    def to_dict(self, seen:set = None) -> dict:
+        """
+        Generate a dictionary for prompting a GenAI
+        """
+        return {
+            "company":self.company.to_dict(),
+            "departments":[dept.to_dict() for dept in self.departments.values()],
+            "employees":[emp.to_dict() for emp in self.employees.values()],
+            "sender":self.sender.to_dict(),
+            "targets":[tgt.to_dict() for tgt in self.targets],
+            "context":self.context,
+            "pretext":self.pretext,
+            "email":{
+                "subject":self.subject,
+                "url":self.url
+            }
+        }

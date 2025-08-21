@@ -5,30 +5,27 @@ GenAI is currently only used to create the email body.
 """
 import os
 import json
-from pathlib import Path
 
 from openai import OpenAI
 
 from ophishal.log import create_logger
+from ophishal.engagement import EmailEngagement
+
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-def get_cfg_json_from_file(filepath:Path):
-    with open(filepath, "r", encoding="utf-8") as f:
-        return json.load(f)
 
-def generate_email_body_and_subject(config:Path, model="gpt-4o"):
+def generate_email_body(eng:EmailEngagement, model="gpt-4o"):
     """
     Critical privacy note: whatever is sent as an argument to this function is sent to OpenAI.
     """
-    logger = create_logger("openai:generate_email_body_and_subject")
+    logger = create_logger("openai:generate_email_body")
     
-    if config is not None and isinstance(config, Path):
-        if config.exists():
-            cfg_dict = get_cfg_json_from_file(config)
-        else:
-            logger.error("Configuration file does not exist")
-            return None
+    if eng is None:
+        logger.error("No EmailEngagement object specified")
+        return None
+
+    engagement_json = eng.to_dict()
 
     if OPENAI_API_KEY is None or OPENAI_API_KEY == "":
         logger.error("Invalid OPENAI_API_KEY")
@@ -38,37 +35,24 @@ def generate_email_body_and_subject(config:Path, model="gpt-4o"):
     schema = {
         "body": {"type": "string", "description": "HTML body of the email, formatted to match the context"}
     }
+    instructions = "You are a senior offensive security researcher on an F500 red team." + \
+                    " When you receive user-provided JSON, use it as context." + \
+                    " Generate an HTML (no CSS) email body based on, but not including verbatim, the sender's writing style, provided in the writing_sample attribute." + \
+                    " You ONLY create an email body with DOCTYPE, html, head, and body tags. No code blocks, no extraneous text. Nothing except HTML. " + \
+                    " Use the \"url\" parameter for any phishing links in the email, but ensure the link context makes sense in the context." + \
+                    " Be sure to write an email that matches the configuration, do not deviate from the configuration for any reason."
 
     logger.info("Prompting %s", model)
-    response = client.chat.completions.create(
+    resp = client.responses.create(
         model=model,
-        messages=[
-            {
-                "role": "system",
-                "content": "You generate phishing content in structured format given a context." + \
-                            "The emails you create are sent from the \"sender\" to each email in the \"targets\" list." + \
-                            "You only generate HTML than can be rendered by almost any email client." + \
-                            "Use the \"url\" parameter for any phishing links in the email, but ensure the link context makes sense in the context." + \
-                            "Your HTML should include the DOCTYPE, html, head, and body tags, with the focus on the body."
-            },
-            {"role": "user", "content": f"Generate an potent phishing email using the following configuration:\n{cfg_dict}"}
-        ],
-        functions=[
-            {
-                "name": "generate_email_phish",
-                "description": "Generate phishing email structure",
-                "parameters": {
-                    "type": "object",
-                    "properties":schema,
-                    "required": ["body"]
-                }
-            }
-        ],
-        function_call={"name": "generate_email_phish"}
+        instructions=instructions,
+        input= "Generate an potent phishing email for a red team engagement using the following configuration." + \
+                f"\n\n{engagement_json}"
     )
-    resp = json.loads(response.choices[0].message.function_call.arguments)
 
-    if list(resp.keys()) != ["body"]:
-        logger.error("Invalid keys returned: %s", list(resp.keys()))
-        return None
-    return resp
+    lines = resp.output_text.split("\n")
+    if lines[0][0:3] == "```":
+        lines = lines[1:]
+    if lines[-1][0:3] == "```":
+        lines = lines[:-1]
+    return "\n".join(lines)

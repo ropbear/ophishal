@@ -35,7 +35,10 @@
       "phone": "(303) 555-1001",
       "location": "South Park, CO",
       "reports_to": null,
-      "sample_text": "Team—let’s keep it tight. Need a quick sync on the VR launch blockers today."
+      "writing_sample": [
+        "I’m not chugging beer! I’m sampling a flight of gluten-free German lagers with a French wine pairing! It’s called a smorgaswein and it’s elegantly cultural!",
+        "Just gonna get a little bit of cancer, Stan. Tell Mom it’s okay."
+      ]
     },
     {
       "uid": "emp_stan",
@@ -49,7 +52,10 @@
       "phone": null,
       "location": "South Park, CO",
       "reports_to": "emp_randy",
-      "sample_text": "I can take a look after stand-up. If it’s urgent, ping me on Slack."
+      "writing_sample":[
+        "Dad, you like to drink. So have a drink once in a while. Have two. If you devote your whole life to completely avoiding something you like, then that thing still controls your life and you've never learned any discipline at all.",
+        "Why’d you have to rub your cl*t on stage, dad?"
+      ]
     }
   ],
 
@@ -60,8 +66,7 @@
     "culture": {
       "city":"South Park",
       "province":"Colorado",
-      "country_code":"US",
-      "workplace": "Casual"
+      "country_code":"US"
     },
     "tech": [
       "Google Workspace",
@@ -83,9 +88,9 @@
 
   "pretext":{
     "medium":"email",
-    "pretext":"Randy wants to have a meeting in the next hour about the upcoming SP MetaVerse launch and wants people to read a docx read-ahead with macro-enabled graphics.",
+    "pretext":"Download a docx and enable macros to view a graphic.",
     "desired_action": "download docx and enable macros",
-    "constraints": ["no spoofing legal department"]
+    "constraints": [""]
   },
 
   "email":{

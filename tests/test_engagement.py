@@ -80,7 +80,7 @@ def test_missing_required_key_raises(engagement_config, missing_key):
         ("company", [], TypeError),
         ("departments", {}, TypeError),
         ("employees", {}, TypeError),
-        ("sender", 999, TypeError),
+        ("sender", 999, ValueError),
         ("targets", "emp_stan", TypeError),
         ("email", 42, TypeError),
     ],

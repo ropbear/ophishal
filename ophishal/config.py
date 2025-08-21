@@ -75,7 +75,8 @@ class BaseConfig:
                 username=e.get("username"),
                 email=e.get("email"),
                 phone=e.get("phone"),
-                reports_to=None
+                reports_to=None,
+                writing_sample=e.get("writing_sample")
             )
             for e in config["employees"]
         }

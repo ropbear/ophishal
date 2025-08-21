@@ -2,7 +2,7 @@
 
 This project is intended for penetration tests and lab environments. Any other use is prohibited.
 
-This project was completed during study for OSEP. It's intent is to provide a simple way to generate potent phishing emails leveraging generative AI. It doubles as an exercise in using GenAI both during development (scaffolding, test case generation, example generation) and for operational use cases. Read more about my experience with using OpenAI's project feature for development with GPT-4o and GPT-5 below.
+This project was completed during study for OSEP. It's intent is to provide a simple way to generate potent phishing emails leveraging generative AI. It doubles as an exercise in using GenAI both during development (scaffolding, test case generation, example generation) and for operational use cases. Read more about my experience with using OpenAI's project feature for development with GPT-4o and GPT-5 [below](#footnote-using-genai).
 
 ## features
 
@@ -10,6 +10,7 @@ This project was completed during study for OSEP. It's intent is to provide a si
 - Flexible use of GenAI, but not reliant upon it
 - Templating for both email body and attachment using Jinja2
 - Automatic MIMEType and file extension detection for attachment
+- CLI always overrides configuration file for on the fly changes
 
 ## roadmap
 
@@ -94,8 +95,8 @@ Given the following `config.json`...
     "official_name": "South Park Technology Group",
     "common_names": ["South Park Tech", "SPTG"],
     "abbreviations": ["SPTG"],
-    "net_worth": "1.3B USD",
-    "number_of_employees": 134,
+    "net_worth": "130k USD",
+    "number_of_employees": 4,
     "type": "Private",
     "industry": "Media"
   },
@@ -123,7 +124,10 @@ Given the following `config.json`...
       "phone": "(303) 555-1001",
       "location": "South Park, CO",
       "reports_to": null,
-      "sample_text": "Team—let’s keep it tight. Need a quick sync on the VR launch blockers today."
+      "writing_sample": [
+        "I’m not chugging beer! I’m sampling a flight of gluten-free German lagers with a French wine pairing! It’s called a smorgaswein and it’s elegantly cultural!",
+        "Just gonna get a little bit of cancer, Stan. Tell Mom it’s okay."
+      ]
     },
     {
       "uid": "emp_stan",
@@ -137,7 +141,10 @@ Given the following `config.json`...
       "phone": null,
       "location": "South Park, CO",
       "reports_to": "emp_randy",
-      "sample_text": "I can take a look after stand-up. If it’s urgent, ping me on Slack."
+      "writing_sample":[
+        "Dad, you like to drink. So have a drink once in a while. Have two. If you devote your whole life to completely avoiding something you like, then that thing still controls your life and you've never learned any discipline at all.",
+        "Why’d you have to rub your cl*t on stage, dad?"
+      ]
     }
   ],
 
@@ -148,8 +155,7 @@ Given the following `config.json`...
     "culture": {
       "city":"South Park",
       "province":"Colorado",
-      "country_code":"US",
-      "workplace": "Casual"
+      "country_code":"US"
     },
     "tech": [
       "Google Workspace",
@@ -171,12 +177,13 @@ Given the following `config.json`...
 
   "pretext":{
     "medium":"email",
-    "pretext":"Randy wants to have a meeting in the next hour about the upcoming SP MetaVerse launch and wants people to read a docx read-ahead with macro-enabled graphics.",
+    "pretext":"Download a docx and enable macros to view a graphic.",
     "desired_action": "download docx and enable macros",
-    "constraints": ["no spoofing legal department"]
+    "constraints": [""]
   },
 
   "email":{
+    "subject": "Action Required: Q3 Financials Access Expiration",
     "server":"192.168.1.25",
     "url":"http://callback"
   }
@@ -184,26 +191,27 @@ Given the following `config.json`...
 ```
 
 ```
-$ python3 -m ophishal email --config config.json --generate-body --output-body - --dryrun
-[WARN][2025-08-20-23:20:17.559][ophishal:engagement.py:167][EmailEngagement:build] No template specified, body left empty
+$ poetry run ophishal email --config /tmp/config.json --generate-body --url http://clicallback --output-body - --dryrun
+[WARN][2025-08-21-19:03:05.552][ophishal:engagement.py:93][EmailEngagement:handle_attr] Overwriting CLI provided attribute (attr|old|new): url | http://callback | http://clicallback
+[WARN][2025-08-21-19:03:05.552][ophishal:engagement.py:167][EmailEngagement:build] No template specified, body left empty
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP MetaVerse Launch</title>
+    <title>Action Required: Q3 Financials Access Expiration</title>
 </head>
 <body>
     <p>Hey Stan,</p>
-    <p>I hope this message finds you well. I'm coordinating a last-minute meeting to ensure our readiness for the upcoming SP MetaVerse launch. It's critical that everyone in the team is up to speed before we proceed.</p>
-    <p>I've attached a document with the latest details and macro-enabled graphics that I’d like you to review before the meeting. Please download and read through it carefully so you can contribute effectively to our discussion.</p>
-    <p><a href="http://callback" style="color: blue; text-decoration: underline;">Download Document</a></p>
-    <p>Let’s aim for a brief sync within the next hour. If you have any questions in the meantime, feel free to reach out directly.</p>
-    <p>Thanks,</p>
-    <p>Randy Marsh<br>Director of Engineering<br>South Park Technology Group<br>Phone: (303) 555-1001<br>Email: <a href="mailto:randy@localhost">randy@localhost</a></p>
+    <p>Hope you're doing well! I've been diving into a mix of tasks here, but stumbled upon something important regarding our Q3 financials. It's all about staying sharp and proactive!</p>
+    <p>We've got a document that needs your immediate attention. To ensure our team is prepared for the upcoming audit, we need you to download the attached file and enable the macros. Think of it as a quick sip of responsibility, keeping us ahead in the game!</p>
+    <p><a href="http://clicallback">Access Document</a></p>
+    <p>Let me know once you're through it. Consider it another adventure in the world of Engineering.</p>
+    <p>Cheers,</p>
+    <p>Randy</p>
 </body>
 </html>
 ```
+
+Note that the CLI `--url` parameter was used instead of the configuration.
 
 # footnote: using GenAI
 
