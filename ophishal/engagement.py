@@ -62,10 +62,11 @@ class EmailEngagement(BaseConfig):
         logger = create_logger("EmailEngagement:parse")
         email_cfg = config["email"]
 
-        # required
-        self.subject = email_cfg["subject"]
+        if "subject" in email_cfg:
+            self.subject = email_cfg["subject"]
+            logger.debug("Added subject from configuration file")
 
-        # optional, can also be specified via command line which will override these values
+        # These can also be specified via command line which will override these values
         if "template" in email_cfg:
             self.template = _resolve_template_path(email_cfg["template"])
             logger.debug("Added template from configuration file")
@@ -125,7 +126,7 @@ class EmailEngagement(BaseConfig):
         logger = create_logger("EmailEngagement:build")
 
         tmpl_path = _resolve_template_path(template) if template is not None else None
-        self.handle_attr("template", tmpl_path, required=True)
+        self.handle_attr("template", tmpl_path)
 
         attachment_bytes = _resolve_template_path(attachment).read_bytes() if attachment is not None else None
         self.handle_attr("attachment", attachment_bytes)
@@ -155,8 +156,12 @@ class EmailEngagement(BaseConfig):
         template_params = {
             "sender": self.sender,
             "targets": self.targets,
-            "subject": self.subject,
+            "subject": self.subject if hasattr(self, "subject") else "",
             "url": self.url
         }
-        self.body = _render_template(self.template, template_params)
-        logger.debug("Created HTML body from template %s", self.template)
+        if template is not None:
+            self.body = _render_template(self.template, template_params)
+            logger.debug("Created HTML body from template %s", self.template)
+        else:
+            self.body = None
+            logger.warning("No template specified, body left empty")

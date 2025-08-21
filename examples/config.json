@@ -54,7 +54,7 @@
   ],
 
   "sender": "emp_randy",
-  "targets": ["emp_stan", "emp_randy"],
+  "targets": ["emp_stan"],
 
   "context":{
     "culture": {

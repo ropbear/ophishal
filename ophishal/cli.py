@@ -4,9 +4,11 @@ import argparse
 from pathlib import Path
 from logging import DEBUG, INFO
 from importlib.metadata import version, PackageNotFoundError
+
 from ophishal.engagement import EmailEngagement
 from ophishal.log import create_logger, setLogLevel, setLogColor
-from ophishal.email import send_email
+from ophishal.send_email import send_email
+from ophishal.genai import generate_email_body_and_subject
 
 
 PKG_NAME = "ophishal"
@@ -54,6 +56,10 @@ def cmd_email(args) -> int:
         server=args.server
     )
     logger.debug("EmailEngagement.build() complete")
+
+    if args.generate_body:
+        data = generate_email_body_and_subject(Path(args.config))
+        eng.body = data["body"]
 
     if args.attach_template is not None and eng.attachment is None:
         logger.warning("No attachment generated from template")
@@ -121,6 +127,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--config",
         required=True,
         help="Path to configuration file"
+    )
+    email_parser.add_argument(
+        "--generate-body",
+        action="store_true",
+        help="Required OPENAI_API_KEY environment variable to be set"
     )
     email_parser.add_argument(
         "--template",
