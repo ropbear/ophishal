@@ -15,30 +15,6 @@ from email.utils import formataddr
 from ophishal.log import create_logger
 from ophishal.engagement import EmailEngagement
 
-def get_mime_details(attachment: bytes) -> dict:
-    logger = create_logger("get_mime_details")
-    mime = magic.Magic(mime=True)
-    mime_type = mime.from_buffer(attachment)
-    mime_ext = mimetypes.guess_extension(mime_type)
-
-    match mime_type:
-        case "text/calendar":
-            method = ""
-            for line in attachment.split(b"\n"):
-                field, val = line.split(b":", 1)
-                if field == "METHOD":
-                    method = val
-            alt = f"calendar;method={method}"
-        case _:
-            alt = ""
-            logger.warning("Unable to find alternate MIMEType presentation for MIMEType %s", mimetype)
-    return {
-        "mimetype":mime_type,
-        "ext":mime_ext,
-        "alttype":alt
-    }
-
-
 def send_email(eng: EmailEngagement):
     logger = create_logger("send_email")
 
@@ -54,52 +30,38 @@ def send_email(eng: EmailEngagement):
         [formataddr((tgt.name, tgt.email)) for tgt in eng.targets]
     )
 
-    # create body and attachment
-    msgAlternative = MIMEMultipart('alternative')
-    msg.attach(msgAlternative)
+    if eng.attachment is not None:
+        # create body and attachment
+        msgAlternative = MIMEMultipart('alternative')
+        msg.attach(msgAlternative)
+        atch_name = eng.attach_params['filename']
+        base, alt = eng.attach_params['mime'].split('/')
+        attachment = MIMEBase(base, alt)
+        attachment.set_payload(eng.attachment)
+        if eng.attach_params['encode']:
+            encode_base64(attachment) 
+        attachment.add_header("Content-Disposition", 'attachment', filename=atch_name)
+        msgAlternative.attach(attachment)
 
-    atch_mime = get_mime_details(eng.attachment)
-    atch_name = eng.attach_params["filename"] if "filename" in eng.attach_params else "attachment"
-    atch_name += atch_mime["ext"]
-    attachment = MIMEBase(atch_mime["mimetype"], f' ;name="{atch_name}"')
-    attachment.set_payload(eng.attachment)
-    encode_base64(attachment)
-    attachment.add_header('Content-Disposition', f'attachment; filename="{atch_name}"')
-
-    email_body = MIMEBase('text/plain', '')
+    # construct email body
+    email_body = MIMEBase('text', 'html')
     email_body.set_payload("")
     encode_base64(email_body)
     email_body.add_header('Content-Transfer-Encoding', "")
+    if eng.attachment is not None:
+        msgAlternative.attach(MIMEText(eng.body, "html"))
+    else:
+        msg.attach(MIMEText(eng.body, "html"))
 
-    msgAlternative.attach(MIMEText(eng.body, "html"))
 
-    match atch_mime["mimetype"].split("/")[0]:
-        case "application":
-            msgAlternative.attach(
-                MIMEApplication(eng.attachment, atch_mime["alttype"])
-            )
-        case "text":
-            msgAlternative.attach(
-                MIMEText(eng.attachment.decode('utf-8'), atch_mime["alttype"])
-            )
-        case "image":
-            msgAlternative.attach(
-                MIMEImage(eng.attachment, atch_mime["alttype"])
-            )
-        case "audio":
-            msgAlternative.attach(
-                MIMEAudio(eng.attachment, atch_mime["alttype"])
-            )
-        case _:
-            logger.error("Unhandled mimetype: %s", atch_mime["mime"])
-            
 
     try:
         mailServer = smtplib.SMTP(eng.server, 25)
     except Exception as e:
         logger.error("Error connecting to mail server at %s: %s", eng.server, e)
         return 1
-    
+
+    print(msg)
     try:
         mailServer.ehlo()
         mailServer.ehlo()

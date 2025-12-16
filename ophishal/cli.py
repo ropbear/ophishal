@@ -146,7 +146,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     email_parser.add_argument(
         "--attach-params",
-        help="Parameters to send use with Jinja to fill in the template"
+        help='#FIXME pass {"filename":"myattach.hta", "mime":"application/hta", "encode":true}'
     )
     email_parser.add_argument(
         "--server",
